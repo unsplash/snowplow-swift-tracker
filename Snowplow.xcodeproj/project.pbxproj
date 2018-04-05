@@ -8,8 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		09DE740B20768BF2001180BB /* Snowplow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DE740120768BF2001180BB /* Snowplow.framework */; };
-		09DE741020768BF2001180BB /* SnowplowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE740F20768BF2001180BB /* SnowplowTests.swift */; };
 		09DE741220768BF2001180BB /* Snowplow.h in Headers */ = {isa = PBXBuildFile; fileRef = 09DE740420768BF2001180BB /* Snowplow.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		09DE741C2076A1CD001180BB /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741B2076A1CD001180BB /* Payload.swift */; };
+		09DE741D2076A1CD001180BB /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741B2076A1CD001180BB /* Payload.swift */; };
+		09DE74202076A9B6001180BB /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741F2076A9B6001180BB /* String+Extensions.swift */; };
+		09DE74212076A9B6001180BB /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741F2076A9B6001180BB /* String+Extensions.swift */; };
+		09DE74262076B381001180BB /* PayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74252076B381001180BB /* PayloadTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -27,8 +31,10 @@
 		09DE740420768BF2001180BB /* Snowplow.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Snowplow.h; sourceTree = "<group>"; };
 		09DE740520768BF2001180BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09DE740A20768BF2001180BB /* SnowplowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SnowplowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		09DE740F20768BF2001180BB /* SnowplowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnowplowTests.swift; sourceTree = "<group>"; };
 		09DE741120768BF2001180BB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		09DE741B2076A1CD001180BB /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
+		09DE741F2076A9B6001180BB /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		09DE74252076B381001180BB /* PayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayloadTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +77,8 @@
 		09DE740320768BF2001180BB /* Snowplow */ = {
 			isa = PBXGroup;
 			children = (
+				09DE741E2076A9AB001180BB /* Utilities */,
+				09DE741B2076A1CD001180BB /* Payload.swift */,
 				09DE740420768BF2001180BB /* Snowplow.h */,
 				09DE740520768BF2001180BB /* Info.plist */,
 			);
@@ -80,10 +88,18 @@
 		09DE740E20768BF2001180BB /* SnowplowTests */ = {
 			isa = PBXGroup;
 			children = (
-				09DE740F20768BF2001180BB /* SnowplowTests.swift */,
+				09DE74252076B381001180BB /* PayloadTests.swift */,
 				09DE741120768BF2001180BB /* Info.plist */,
 			);
 			path = SnowplowTests;
+			sourceTree = "<group>";
+		};
+		09DE741E2076A9AB001180BB /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				09DE741F2076A9B6001180BB /* String+Extensions.swift */,
+			);
+			name = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -149,6 +165,7 @@
 				TargetAttributes = {
 					09DE740020768BF2001180BB = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 0930;
 					};
 					09DE740920768BF2001180BB = {
 						CreatedOnToolsVersion = 9.3;
@@ -212,6 +229,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09DE74202076A9B6001180BB /* String+Extensions.swift in Sources */,
+				09DE741C2076A1CD001180BB /* Payload.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -219,7 +238,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				09DE741020768BF2001180BB /* SnowplowTests.swift in Sources */,
+				09DE741D2076A1CD001180BB /* Payload.swift in Sources */,
+				09DE74212076A9B6001180BB /* String+Extensions.swift in Sources */,
+				09DE74262076B381001180BB /* PayloadTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +378,7 @@
 		09DE741620768BF2001180BB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -374,6 +396,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.unsplash.Snowplow;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -382,6 +405,7 @@
 		09DE741720768BF2001180BB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
@@ -407,6 +431,7 @@
 		09DE741920768BF2001180BB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Z7GT6KUQ38;
 				INFOPLIST_FILE = SnowplowTests/Info.plist;
@@ -425,6 +450,7 @@
 		09DE741A20768BF2001180BB /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = Z7GT6KUQ38;
 				INFOPLIST_FILE = SnowplowTests/Info.plist;
