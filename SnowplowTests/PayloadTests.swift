@@ -51,21 +51,13 @@ class PayloadTests: XCTestCase {
                 return
             }
 
-            // Set the value
-            try payload.set(value, forKey: key)
-            XCTAssert(payload[key] == jsonString)
-
-            // Clear the payload
-            payload.set(nil, forKey: key)
-            XCTAssert(payload[key] == nil)
-
             guard let base64String = jsonString.base64Value else {
                 XCTFail("Cannot convert to Base64 string.")
                 return
             }
 
             // Set the value using Base64 encoding
-            try payload.set(value, forKey: key, base64Encoded: true)
+            try payload.set(value, forKey: key)
             XCTAssert(payload[key] == base64String)
 
             // Clear the payload
@@ -74,7 +66,41 @@ class PayloadTests: XCTestCase {
         } catch {
             XCTFail(error.localizedDescription)
         }
+    }
 
+    func testSetObjectValueNonBase64Encoded() {
+        // Set the values
+        let key = "Key"
+        let value: [String: Any] = [
+            "String": "Value",
+            "Int": 1,
+            "Object": [
+                "String": "Value",
+                "Int": 1
+            ]
+        ]
+        var payload = Payload(isBase64Encoded: false)
+
+        // Make sure the payload is empty
+        XCTAssert(payload[key] == nil)
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: value, options: [])
+            guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                XCTFail("Cannot convert JSON object to String.")
+                return
+            }
+
+            // Set the value
+            try payload.set(value, forKey: key)
+            XCTAssert(payload[key] == jsonString)
+
+            // Clear the payload
+            payload.set(nil, forKey: key)
+            XCTAssert(payload[key] == nil)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
     }
 
 }

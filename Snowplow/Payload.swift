@@ -10,18 +10,22 @@ import Foundation
 
 struct Payload {
 
+    init(isBase64Encoded: Bool = true) {
+        self.isBase64Encoded = isBase64Encoded
+    }
+
     mutating func set(_ value: String?, forKey key: String) {
         self.values[key] = value
     }
 
-    mutating func set(_ object: [String: Any], forKey key: String, base64Encoded: Bool = false) throws {
+    mutating func set(_ object: [String: Any], forKey key: String) throws {
         let jsonData = try JSONSerialization.data(withJSONObject: object, options: [])
 
         guard let jsonString = String(data: jsonData, encoding: .utf8) else {
             throw PayloadError.convertionFailed
         }
 
-        if base64Encoded == false {
+        if isBase64Encoded == false {
             set(jsonString, forKey: key)
             return
         }
@@ -32,6 +36,7 @@ struct Payload {
         set(base64String, forKey: key)
     }
 
+    private let isBase64Encoded: Bool
     private(set) var values = [String: String]()
 
 }
