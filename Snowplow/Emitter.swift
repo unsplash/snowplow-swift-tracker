@@ -26,6 +26,7 @@ class Emitter {
     }
 
     weak var delegate: EmitterDelegate?
+    var payloadFlushFrequency = 10
 
     // MARK: - Private
 
@@ -68,8 +69,8 @@ extension Emitter {
             request.queryType = .json
             request.headers = ["content-type": "application/json; charset=utf-8"]
             request.parameters = [
-                "schema": Constants.schema.payloadDataSchema,
-                "data": payloads.map({ $0.values })
+                PropertyKey.schema: SchemaDefinition.payloadData,
+                PropertyKey.data: payloads.map({ $0.values })
             ]
             requests.append(request)
         }
@@ -100,5 +101,3 @@ extension Emitter {
     }
 
 }
-
-let payloadFlushFrequency = 10

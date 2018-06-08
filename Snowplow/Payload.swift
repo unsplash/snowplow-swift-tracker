@@ -14,11 +14,20 @@ struct Payload {
         self.isBase64Encoded = isBase64Encoded
     }
 
-    mutating func set(_ value: String?, forKey key: String) {
+    mutating func add(values: [PropertyKey: String]) {
+        self.values.merge(values, uniquingKeysWith: { (current, _) in current })
+    }
+
+    mutating func set(_ value: String, forKey key: PropertyKey) {
         self.values[key] = value
     }
 
-    mutating func set(_ object: [String: Any], forKey key: String) throws {
+    mutating func set(_ object: Any?, forKey key: PropertyKey) throws {
+        guard let object = object else {
+            values.removeValue(forKey: key)
+            return
+        }
+
         let jsonData = try JSONSerialization.data(withJSONObject: object, options: [])
 
         guard let jsonString = String(data: jsonData, encoding: .utf8) else {
@@ -37,13 +46,13 @@ struct Payload {
     }
 
     private let isBase64Encoded: Bool
-    private(set) var values = [String: String]()
+    private(set) var values = [PropertyKey: String]()
 
 }
 
 extension Payload {
 
-    subscript(key: String) -> String? {
+    subscript(key: PropertyKey) -> PropertyKey? {
         return values[key]
     }
 

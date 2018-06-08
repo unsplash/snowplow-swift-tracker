@@ -1,30 +1,26 @@
 //
-//  EmitterTests.swift
+//  TrackerTests.swift
 //  SnowplowTests
 //
-//  Created by Olivier Collet on 2018-04-05.
+//  Created by Olivier Collet on 2018-06-07.
 //  Copyright © 2018 Unsplash. All rights reserved.
 //
 
 import XCTest
 
-class EmitterTests: XCTestCase, EmitterDelegate {
+class TrackerTests: XCTestCase, EmitterDelegate {
 
     private var emitterExpectation: XCTestExpectation?
 
-    func testEmitter() {
+    func testTracker() {
         emitterExpectation = expectation(description: "Success")
 
         let emitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
         emitter.payloadFlushFrequency = 1
 
-        var payload = Payload(isBase64Encoded: false)
-        payload.add(values: [
-            .trackerVersion: "swift-test",
-            .platform: PlatformName.mobile.rawValue,
-            .event: EventType.structured.rawValue
-            ])
-        emitter.input(payload)
+        let tracker = Tracker(applicationId: "swift-test-app", platform: .mobile, emitter: emitter)
+        tracker.trackPageView(uri: "test-page")
+        tracker.trackStructEvent(category: "test-category", action: "test-action")
 
         waitForExpectations(timeout: 10) { (error) in
             if let error = error {

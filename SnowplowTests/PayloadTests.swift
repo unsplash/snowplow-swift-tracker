@@ -24,7 +24,7 @@ class PayloadTests: XCTestCase {
         XCTAssert(payload[key] == value)
 
         // Clear the payload
-        payload.set(nil, forKey: key)
+        try? payload.set(nil, forKey: key)
         XCTAssert(payload[key] == nil)
     }
 
@@ -61,7 +61,7 @@ class PayloadTests: XCTestCase {
             XCTAssert(payload[key] == base64String)
 
             // Clear the payload
-            payload.set(nil, forKey: key)
+            try? payload.set(nil, forKey: key)
             XCTAssert(payload[key] == nil)
         } catch {
             XCTFail(error.localizedDescription)
@@ -96,7 +96,7 @@ class PayloadTests: XCTestCase {
             XCTAssert(payload[key] == jsonString)
 
             // Clear the payload
-            payload.set(nil, forKey: key)
+            try? payload.set(nil, forKey: key)
             XCTAssert(payload[key] == nil)
         } catch {
             XCTFail(error.localizedDescription)
