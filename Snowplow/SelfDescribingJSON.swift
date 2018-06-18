@@ -11,12 +11,42 @@ import Foundation
 struct SelfDescribingJSON {
 
     let schema: SchemaDefinition
-    let data: [PropertyKey: Any]
+    let data: Any?
 
-    var jsonObject: [PropertyKey: Any] {
+    init(schema: SchemaDefinition, data: Payload) {
+        self.schema = schema
+        self.data = data.content
+    }
+
+    init(schema: SchemaDefinition, data: [Payload]) {
+        self.schema = schema
+        self.data = data.map({ $0.content })
+    }
+
+    init(schema: SchemaDefinition, data: SelfDescribingJSON) {
+        self.schema = schema
+        self.data = data.dictionaryRepresentation
+    }
+
+    init(schema: SchemaDefinition, data: [SelfDescribingJSON]) {
+        self.schema = schema
+        self.data = data.map({ $0.dictionaryRepresentation })
+    }
+
+    init(schema: SchemaDefinition, data: [PropertyKey: Any]) {
+        self.schema = schema
+        var dictionary = [String: Any]()
+        for (key, value) in data {
+            dictionary[key.rawValue] = value
+        }
+        self.data = dictionary
+    }
+
+    var dictionaryRepresentation: [String: Any] {
+        guard let data = data else { return [:] }
         return [
-            PropertyKey.schema: schema,
-            PropertyKey.data: data
+            PropertyKey.schema.rawValue: schema.rawValue,
+            PropertyKey.data.rawValue: data
         ]
     }
 

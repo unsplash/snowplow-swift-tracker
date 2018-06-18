@@ -12,14 +12,32 @@ class TrackerTests: XCTestCase, EmitterDelegate {
 
     private var emitterExpectation: XCTestExpectation?
 
-    func testTracker() {
-        emitterExpectation = expectation(description: "Success")
-
+    private lazy var tracker: Tracker = {
         let emitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
         emitter.payloadFlushFrequency = 1
 
-        let tracker = Tracker(applicationId: "swift-test-app", platform: .mobile, emitter: emitter)
+        return Tracker(applicationId: "swift-test-app",
+                              platform: .mobile,
+                              emitter: emitter,
+                              name: "test",
+                              isBase64Encoded: false)
+    }()
+
+    func testTrackPageView() {
+        emitterExpectation = expectation(description: "Success")
+
         tracker.trackPageView(uri: "test-page")
+
+        waitForExpectations(timeout: 10) { (error) in
+            if let error = error {
+                debugPrint(error)
+            }
+        }
+    }
+
+    func testTrackStructEvent() {
+        emitterExpectation = expectation(description: "Success")
+
         tracker.trackStructEvent(category: "test-category", action: "test-action")
 
         waitForExpectations(timeout: 10) { (error) in

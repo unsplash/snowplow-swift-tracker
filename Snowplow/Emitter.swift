@@ -58,7 +58,7 @@ extension Emitter {
                 let request = NetworkRequest()
                 request.endpoint = "\(baseURL)/i"
                 request.method = .get
-                request.parameters = payload.values
+                request.parameters = payload.content
                 requests.append(request)
             }
 
@@ -68,10 +68,7 @@ extension Emitter {
             request.method = .post
             request.queryType = .json
             request.headers = ["content-type": "application/json; charset=utf-8"]
-            request.parameters = [
-                PropertyKey.schema: SchemaDefinition.payloadData,
-                PropertyKey.data: payloads.map({ $0.values })
-            ]
+            request.parameters = SelfDescribingJSON(schema: .payloadData, data: payloads).dictionaryRepresentation
             requests.append(request)
         }
 

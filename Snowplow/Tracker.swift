@@ -20,6 +20,7 @@ class Tracker {
         self.emitter = emitter
         self.name = name
         self.isBase64Encoded = isBase64Encoded
+        self.session = Session()
     }
 
     // MARK: - Properties
@@ -40,10 +41,10 @@ class Tracker {
     private let name: String
     private let isBase64Encoded: Bool
     private let emitter: Emitter
+    private let session: Session
 
-    private var trackerValues: [PropertyKey: String] {
+    private var trackerPayload: Payload {
         var values = [PropertyKey: String]()
-
         values[.trackerVersion] = trackerVersion
         values[.appId] = applicationId
         values[.namespace] = name
@@ -55,7 +56,7 @@ class Tracker {
         values[.timezone] = timezone?.identifier
         values[.userId] = userId
         values[.ipAddress] = ipAddress
-        return values
+        return Payload(values, isBase64Encoded: isBase64Encoded)
     }
 
 }
@@ -65,18 +66,21 @@ class Tracker {
 extension Tracker {
 
     func track(payload: Payload,
-               context: [SelfDescribingJSON]? = nil,
+               contexts: [SelfDescribingJSON]? = nil,
                timestamp: TimeInterval? = nil) {
         var payload = payload
 
-        payload.add(values: trackerValues)
+        payload.merge(payload: trackerPayload)
 
-        payload.set(UUID().uuidString, forKey: .uuid)
+        let eventId = UUID().uuidString.lowercased()
+        payload.set(eventId, forKey: .uuid)
 
-        if let context = context {
-            let contextKey: PropertyKey = isBase64Encoded ? .contextEncoded : .context
-            try? payload.set(context.map({ $0.jsonObject }), forKey: contextKey)
-        }
+        let allContexts = finalContexts(with: contexts, eventId: eventId)
+        let data = allContexts
+        let context = SelfDescribingJSON(schema: .contexts, data: data)
+
+        let contextKey: PropertyKey = isBase64Encoded ? .contextEncoded : .context
+        payload.set(context, forKey: contextKey)
 
         let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
         payload.set(String.init(describing: timestamp), forKey: .deviceTimestamp)
@@ -87,14 +91,14 @@ extension Tracker {
     func trackPageView(uri: String,
                        title: String? = nil,
                        referrer: String? = nil,
-                       context: [SelfDescribingJSON]? = nil,
+                       contexts: [SelfDescribingJSON]? = nil,
                        timestamp: TimeInterval? = nil) {
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.pageView.rawValue, forKey: .event)
         payload.set(uri, forKey: .url)
-        try? payload.set(title, forKey: .title)
-        try? payload.set(referrer, forKey: .referrer)
-        track(payload: payload, context: context, timestamp: timestamp)
+        payload.set(title, forKey: .title)
+        payload.set(referrer, forKey: .referrer)
+        track(payload: payload, contexts: contexts, timestamp: timestamp)
     }
 
     func trackStructEvent(category: String,
@@ -102,27 +106,48 @@ extension Tracker {
                           label: String? = nil,
                           property: String? = nil,
                           value: Double? = nil,
-                          context: [SelfDescribingJSON]? = nil,
+                          contexts: [SelfDescribingJSON]? = nil,
                           timestamp: TimeInterval? = nil) {
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.structured.rawValue, forKey: .event)
         payload.set(category, forKey: .category)
         payload.set(action, forKey: .action)
-        try? payload.set(label, forKey: .label)
-        try? payload.set(property, forKey: .property)
-        try? payload.set(value, forKey: .value)
-        track(payload: payload, context: context, timestamp: timestamp)
+        if let label = label {
+            payload.set(label, forKey: .label)
+        }
+        if let property = property {
+            payload.set(property, forKey: .property)
+        }
+        if let value = value {
+            payload.set(String(describing: value), forKey: .value)
+        }
+        track(payload: payload, contexts: contexts, timestamp: timestamp)
     }
 
-    func trackUnstructEvent(event: [String: Any],
-                            context: [SelfDescribingJSON]? = nil,
+    func trackUnstructEvent(event: Payload,
+                            contexts: [SelfDescribingJSON]? = nil,
                             timestamp: TimeInterval? = nil) {
         let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.unstructured.rawValue, forKey: .event)
         let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
-        try? payload.set(json, forKey: eventKey)
-        track(payload: payload, context: context, timestamp: timestamp)
+        payload.set(json, forKey: eventKey)
+        track(payload: payload, contexts: contexts, timestamp: timestamp)
+    }
+
+}
+
+// MARK: - Context
+
+extension Tracker {
+
+    private func finalContexts(with contexts: [SelfDescribingJSON]?, eventId: String) -> [SelfDescribingJSON] {
+        var allContexts = contexts ?? [SelfDescribingJSON]()
+
+        let sessionContext = session.sessionContext(with: eventId)
+        allContexts.append(sessionContext)
+
+        return allContexts
     }
 
 }

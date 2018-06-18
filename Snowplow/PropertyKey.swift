@@ -8,70 +8,64 @@
 
 import Foundation
 
-typealias PropertyKey = String
+enum PropertyKey: String {
 
-// Common
-extension PropertyKey {
-    static let schema              = "schema"
-    static let data                = "data"
-    static let trackerVersion      = "tv"
-    static let context             = "co"
-    static let contextEncoded      = "cx"
-    static let unstructured        = "ue_pr"
-    static let unstructuredEncoded = "ue_px"
-}
+    // Common
+    case schema              = "schema"
+    case data                = "data"
+    case trackerVersion      = "tv"
+    case context             = "co"
+    case contextEncoded      = "cx"
+    case unstructured        = "ue_pr"
+    case unstructuredEncoded = "ue_px"
 
-// Application
-extension PropertyKey {
-    static let namespace = "tna"
-    static let appId     = "aid"
-    static let platform  = "p"
-}
+    // Application
+    case namespace = "tna"
+    case appId     = "aid"
+    case platform  = "p"
 
-// Time
-extension PropertyKey {
-    static let deviceTimestamp = "dtm"
-    static let sentTimestamp   = "stm"
-    static let userTimestamp   = "ttm"
-    static let timezone        = "tz"
-}
+    // Time
+    case deviceTimestamp = "dtm"
+    case sentTimestamp   = "stm"
+    case userTimestamp   = "ttm"
+    case timezone        = "tz"
 
-// User
-extension PropertyKey {
-    static let networkId         = "tnuid"
-    static let domainId          = "duid"
-    static let userId            = "uid"
-    static let sessionId         = "sid"
-    static let sessionVisitCount = "vid"
-    static let ipAddress         = "ip"
-}
+    // User
+    case networkId         = "tnuid"
+    case domainId          = "duid"
+    case userId            = "uid"
+    case sessionId         = "sid"
+    case sessionVisitCount = "vid"
+    case ipAddress         = "ip"
 
-// Device
-extension PropertyKey {
-    static let resolution = "res"
-    static let viewPort   = "vp"
-    static let colorDepth = "cd"
-    static let language   = "lang"
-}
+    // Device
+    case resolution = "res"
+    case viewPort   = "vp"
+    case colorDepth = "cd"
+    case language   = "lang"
 
-// Event
-extension PropertyKey {
-    static let event = "e"
-    static let uuid  = "eid"
-}
+    // Event
+    case event = "e"
+    case uuid  = "eid"
 
-// Page view event
-extension PropertyKey {
-    static let url      = "url"
-    static let title    = "page"
-    static let referrer = "refr"
-}
+    // Page view event
+    case url      = "url"
+    case title    = "page"
+    case referrer = "refr"
 
-// Structured event
-extension PropertyKey {
-    static let category = "se_ca"
-    static let action   = "se_ac"
-    static let label    = "se_la"
-    static let property = "se_pr"
-    static let value    = "se_va"
+    // Structured event
+    case category = "se_ca"
+    case action   = "se_ac"
+    case label    = "se_la"
+    case property = "se_pr"
+    case value    = "se_va"
+
+    // Session context
+    case sessionContextSessionId         = "sessionId"
+    case sessionContextUserId            = "userId"
+    case sessionContextPreviousSessionId = "previousSessionId"
+    case sessionContextSessionIndex      = "sessionIndex"
+    case sessionContextFirstEventId      = "firstEventId"
+    case sessionContextStorageMechanism  = "storageMechanism"
+
 }

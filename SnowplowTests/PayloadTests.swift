@@ -12,7 +12,7 @@ class PayloadTests: XCTestCase {
 
     func testSetStringValue() {
         // Set the values
-        let key = "Key"
+        let key = PropertyKey.data
         let value = "Value"
         var payload = Payload()
 
@@ -24,13 +24,13 @@ class PayloadTests: XCTestCase {
         XCTAssert(payload[key] == value)
 
         // Clear the payload
-        try? payload.set(nil, forKey: key)
+        payload.set(nil, forKey: key)
         XCTAssert(payload[key] == nil)
     }
 
     func testSetObjectValue() {
         // Set the values
-        let key = "Key"
+        let key = PropertyKey.data
         let value: [String: Any] = [
             "String": "Value",
             "Int": 1,
@@ -57,11 +57,11 @@ class PayloadTests: XCTestCase {
             }
 
             // Set the value using Base64 encoding
-            try payload.set(value, forKey: key)
+            payload.set(value, forKey: key)
             XCTAssert(payload[key] == base64String)
 
             // Clear the payload
-            try? payload.set(nil, forKey: key)
+            payload.set(nil, forKey: key)
             XCTAssert(payload[key] == nil)
         } catch {
             XCTFail(error.localizedDescription)
@@ -70,7 +70,7 @@ class PayloadTests: XCTestCase {
 
     func testSetObjectValueNonBase64Encoded() {
         // Set the values
-        let key = "Key"
+        let key = PropertyKey.data
         let value: [String: Any] = [
             "String": "Value",
             "Int": 1,
@@ -92,11 +92,11 @@ class PayloadTests: XCTestCase {
             }
 
             // Set the value
-            try payload.set(value, forKey: key)
+            payload.set(value, forKey: key)
             XCTAssert(payload[key] == jsonString)
 
             // Clear the payload
-            try? payload.set(nil, forKey: key)
+            payload.set(nil, forKey: key)
             XCTAssert(payload[key] == nil)
         } catch {
             XCTFail(error.localizedDescription)
