@@ -68,4 +68,9 @@ enum PropertyKey: String {
     case sessionContextFirstEventId      = "firstEventId"
     case sessionContextStorageMechanism  = "storageMechanism"
 
+    // Platform context
+    case platformOSType             = "osType"
+    case platformOSVersion          = "osVersion"
+    case platformDeviceManufacturer = "deviceManufacturer"
+    case platformDeviceModel        = "deviceModel"
 }

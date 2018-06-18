@@ -17,10 +17,8 @@ class TrackerTests: XCTestCase, EmitterDelegate {
         emitter.payloadFlushFrequency = 1
 
         return Tracker(applicationId: "swift-test-app",
-                              platform: .mobile,
                               emitter: emitter,
-                              name: "test",
-                              isBase64Encoded: false)
+                              name: "test")
     }()
 
     func testTrackPageView() {

@@ -35,7 +35,7 @@ struct SessionInfo: Codable {
     func write(to url: URL) {
         do {
             let sessionData = try JSONEncoder().encode(self)
-            try sessionData.write(to: url)
+            try sessionData.write(to: url, options: .atomic)
         } catch {
             debugPrint(error)
         }

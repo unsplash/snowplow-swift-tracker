@@ -10,7 +10,11 @@ import Foundation
 import UIKit
 
 private let sessionFilename = "SnowplowSession.json"
+#if os(tvOS)
+private let sessionFileURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(sessionFilename)")
+#else
 private let sessionFileURL = URL(appFolder: .applicationSupport).appendingPathComponent(sessionFilename)
+#endif
 
 class Session {
 

@@ -11,28 +11,18 @@ import Foundation
 class Tracker {
 
     init(applicationId: String,
-         platform: PlatformName,
          emitter: Emitter,
-         name: String = "",
-         isBase64Encoded: Bool = true) {
+         name: String = "") {
         self.applicationId = applicationId
-        self.plaftorm = platform
         self.emitter = emitter
         self.name = name
-        self.isBase64Encoded = isBase64Encoded
+        self.isBase64Encoded = true
         self.session = Session()
     }
 
     // MARK: - Properties
 
-    var userId = UUID().uuidString
-    var plaftorm: PlatformName
-    var screenResolution: String?
-    var viewport: String?
-    var colorDepth: String?
-    var timezone: TimeZone?
-    var language: String?
-    var ipAddress: String?
+    var userId: String?
 
     // MARK: - Private properties
 
@@ -48,14 +38,12 @@ class Tracker {
         values[.trackerVersion] = trackerVersion
         values[.appId] = applicationId
         values[.namespace] = name
-        values[.platform] = plaftorm.rawValue
-        values[.colorDepth] = colorDepth
-        values[.language] = language
-        values[.resolution] = screenResolution
-        values[.viewPort] = viewport
-        values[.timezone] = timezone?.identifier
+        values[.platform] = SystemInfo.platform
+        values[.language] = SystemInfo.language
+        values[.resolution] = SystemInfo.screenResolution
+        values[.viewPort] = SystemInfo.screenResolution
+        values[.timezone] = SystemInfo.timezone
         values[.userId] = userId
-        values[.ipAddress] = ipAddress
         return Payload(values, isBase64Encoded: isBase64Encoded)
     }
 
@@ -147,7 +135,18 @@ extension Tracker {
         let sessionContext = session.sessionContext(with: eventId)
         allContexts.append(sessionContext)
 
+        allContexts.append(platformContext)
+
         return allContexts
     }
 
+    private var platformContext: SelfDescribingJSON {
+        let data: [PropertyKey: String] = [
+            .platformOSType: SystemInfo.osType,
+            .platformOSVersion: SystemInfo.osVersion,
+            .platformDeviceManufacturer: SystemInfo.deviceVendor,
+            .platformDeviceModel: SystemInfo.deviceModel
+        ]
+        return SelfDescribingJSON(schema: .platformMobile, data: data)
+    }
 }

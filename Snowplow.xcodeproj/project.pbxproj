@@ -15,6 +15,45 @@
 		09626CD320771D9200B6FE59 /* PropertyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742B20770B00001180BB /* PropertyKey.swift */; };
 		09626CD72078E11500B6FE59 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD62078E11500B6FE59 /* Tracker.swift */; };
 		09626CD92079091700B6FE59 /* SelfDescribingJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD82079091700B6FE59 /* SelfDescribingJSON.swift */; };
+		098D2D1920D84DA20057C1A4 /* ConcurrentOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE743120770D1B001180BB /* ConcurrentOperation.swift */; };
+		098D2D1A20D84DA20057C1A4 /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742F20770CEA001180BB /* NetworkRequest.swift */; };
+		098D2D1B20D84DA20057C1A4 /* OperationQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742D20770BA6001180BB /* OperationQueue+Extensions.swift */; };
+		098D2D1C20D84DA20057C1A4 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741F2076A9B6001180BB /* String+Extensions.swift */; };
+		098D2D1D20D84DA20057C1A4 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4A5D820CEEAC60029ED40 /* URL+Extensions.swift */; };
+		098D2D1E20D84DA80057C1A4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF78F20CB1660006D19B6 /* EventType.swift */; };
+		098D2D1F20D84DA80057C1A4 /* PlatformName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF78C20CB1625006D19B6 /* PlatformName.swift */; };
+		098D2D2020D84DA80057C1A4 /* PropertyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742B20770B00001180BB /* PropertyKey.swift */; };
+		098D2D2120D84DA80057C1A4 /* SchemaDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF79220CB1677006D19B6 /* SchemaDefinition.swift */; };
+		098D2D2220D84DAF0057C1A4 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74272076C8B7001180BB /* Emitter.swift */; };
+		098D2D2320D84DAF0057C1A4 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741B2076A1CD001180BB /* Payload.swift */; };
+		098D2D2420D84DAF0057C1A4 /* SelfDescribingJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD82079091700B6FE59 /* SelfDescribingJSON.swift */; };
+		098D2D2520D84DAF0057C1A4 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF79620CB290A006D19B6 /* Session.swift */; };
+		098D2D2620D84DAF0057C1A4 /* SessionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4A5DB20CEF3F40029ED40 /* SessionInfo.swift */; };
+		098D2D2720D84DAF0057C1A4 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD62078E11500B6FE59 /* Tracker.swift */; };
+		098D2D2820D84DAF0057C1A4 /* Snowplow.h in Headers */ = {isa = PBXBuildFile; fileRef = 09DE740420768BF2001180BB /* Snowplow.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		098D2D2A20D84E0A0057C1A4 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098D2D2920D84E0A0057C1A4 /* SystemInfo.swift */; };
+		098D2D2B20D84E0A0057C1A4 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098D2D2920D84E0A0057C1A4 /* SystemInfo.swift */; };
+		098D2D2C20D84E0A0057C1A4 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098D2D2920D84E0A0057C1A4 /* SystemInfo.swift */; };
+		098D2D3620D858610057C1A4 /* Snowplow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 098D2D1120D84D5C0057C1A4 /* Snowplow.framework */; };
+		098D2D3C20D858980057C1A4 /* EmitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 093A759C20825A4300A72807 /* EmitterTests.swift */; };
+		098D2D3D20D858980057C1A4 /* PayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74252076B381001180BB /* PayloadTests.swift */; };
+		098D2D3E20D858980057C1A4 /* TrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF78620C9C5E2006D19B6 /* TrackerTests.swift */; };
+		098D2D3F20D858A10057C1A4 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74272076C8B7001180BB /* Emitter.swift */; };
+		098D2D4020D858A10057C1A4 /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741B2076A1CD001180BB /* Payload.swift */; };
+		098D2D4120D858A10057C1A4 /* SelfDescribingJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD82079091700B6FE59 /* SelfDescribingJSON.swift */; };
+		098D2D4220D858A10057C1A4 /* Session.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF79620CB290A006D19B6 /* Session.swift */; };
+		098D2D4320D858A10057C1A4 /* SessionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4A5DB20CEF3F40029ED40 /* SessionInfo.swift */; };
+		098D2D4420D858A10057C1A4 /* SystemInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 098D2D2920D84E0A0057C1A4 /* SystemInfo.swift */; };
+		098D2D4520D858A10057C1A4 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD62078E11500B6FE59 /* Tracker.swift */; };
+		098D2D4620D858A50057C1A4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF78F20CB1660006D19B6 /* EventType.swift */; };
+		098D2D4720D858A50057C1A4 /* PlatformName.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF78C20CB1625006D19B6 /* PlatformName.swift */; };
+		098D2D4820D858A50057C1A4 /* PropertyKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742B20770B00001180BB /* PropertyKey.swift */; };
+		098D2D4920D858A50057C1A4 /* SchemaDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF79220CB1677006D19B6 /* SchemaDefinition.swift */; };
+		098D2D4A20D858AA0057C1A4 /* ConcurrentOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE743120770D1B001180BB /* ConcurrentOperation.swift */; };
+		098D2D4B20D858AA0057C1A4 /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742F20770CEA001180BB /* NetworkRequest.swift */; };
+		098D2D4C20D858AA0057C1A4 /* OperationQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742D20770BA6001180BB /* OperationQueue+Extensions.swift */; };
+		098D2D4D20D858AA0057C1A4 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741F2076A9B6001180BB /* String+Extensions.swift */; };
+		098D2D4E20D858AA0057C1A4 /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09F4A5D820CEEAC60029ED40 /* URL+Extensions.swift */; };
 		09CEF78520C9C5D0006D19B6 /* Tracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD62078E11500B6FE59 /* Tracker.swift */; };
 		09CEF78720C9C5E2006D19B6 /* TrackerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09CEF78620C9C5E2006D19B6 /* TrackerTests.swift */; };
 		09CEF78820C9D08F006D19B6 /* SelfDescribingJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09626CD82079091700B6FE59 /* SelfDescribingJSON.swift */; };
@@ -45,6 +84,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		098D2D3720D858610057C1A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 09DE73F820768BF2001180BB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 098D2D1020D84D5C0057C1A4;
+			remoteInfo = "Snowplow-tvOS";
+		};
 		09DE740C20768BF2001180BB /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 09DE73F820768BF2001180BB /* Project object */;
@@ -58,6 +104,12 @@
 		093A759C20825A4300A72807 /* EmitterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EmitterTests.swift; sourceTree = "<group>"; };
 		09626CD62078E11500B6FE59 /* Tracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Tracker.swift; sourceTree = "<group>"; };
 		09626CD82079091700B6FE59 /* SelfDescribingJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfDescribingJSON.swift; sourceTree = "<group>"; };
+		098D2D1120D84D5C0057C1A4 /* Snowplow.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Snowplow.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		098D2D1320D84D5C0057C1A4 /* Snowplow_tvOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Snowplow_tvOS.h; sourceTree = "<group>"; };
+		098D2D1420D84D5C0057C1A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		098D2D2920D84E0A0057C1A4 /* SystemInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SystemInfo.swift; sourceTree = "<group>"; };
+		098D2D3120D858610057C1A4 /* SnowplowTests-tvOS.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "SnowplowTests-tvOS.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		098D2D3520D858610057C1A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09CEF78620C9C5E2006D19B6 /* TrackerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerTests.swift; sourceTree = "<group>"; };
 		09CEF78C20CB1625006D19B6 /* PlatformName.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlatformName.swift; sourceTree = "<group>"; };
 		09CEF78F20CB1660006D19B6 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
@@ -81,6 +133,21 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		098D2D0D20D84D5C0057C1A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		098D2D2E20D858610057C1A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098D2D3620D858610057C1A4 /* Snowplow.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09DE73FD20768BF2001180BB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -99,6 +166,23 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		098D2D1220D84D5C0057C1A4 /* Snowplow-tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				098D2D1320D84D5C0057C1A4 /* Snowplow_tvOS.h */,
+				098D2D1420D84D5C0057C1A4 /* Info.plist */,
+			);
+			path = "Snowplow-tvOS";
+			sourceTree = "<group>";
+		};
+		098D2D3220D858610057C1A4 /* SnowplowTests-tvOS */ = {
+			isa = PBXGroup;
+			children = (
+				098D2D3520D858610057C1A4 /* Info.plist */,
+			);
+			path = "SnowplowTests-tvOS";
+			sourceTree = "<group>";
+		};
 		09CEF79520CB177B006D19B6 /* Constants */ = {
 			isa = PBXGroup;
 			children = (
@@ -115,6 +199,8 @@
 			children = (
 				09DE740320768BF2001180BB /* Snowplow */,
 				09DE740E20768BF2001180BB /* SnowplowTests */,
+				098D2D1220D84D5C0057C1A4 /* Snowplow-tvOS */,
+				098D2D3220D858610057C1A4 /* SnowplowTests-tvOS */,
 				09DE740220768BF2001180BB /* Products */,
 			);
 			sourceTree = "<group>";
@@ -124,6 +210,8 @@
 			children = (
 				09DE740120768BF2001180BB /* Snowplow.framework */,
 				09DE740A20768BF2001180BB /* SnowplowTests.xctest */,
+				098D2D1120D84D5C0057C1A4 /* Snowplow.framework */,
+				098D2D3120D858610057C1A4 /* SnowplowTests-tvOS.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -138,6 +226,7 @@
 				09626CD82079091700B6FE59 /* SelfDescribingJSON.swift */,
 				09CEF79620CB290A006D19B6 /* Session.swift */,
 				09F4A5DB20CEF3F40029ED40 /* SessionInfo.swift */,
+				098D2D2920D84E0A0057C1A4 /* SystemInfo.swift */,
 				09626CD62078E11500B6FE59 /* Tracker.swift */,
 				09DE740420768BF2001180BB /* Snowplow.h */,
 				09DE740520768BF2001180BB /* Info.plist */,
@@ -171,6 +260,14 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		098D2D0E20D84D5C0057C1A4 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098D2D2820D84DAF0057C1A4 /* Snowplow.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09DE73FE20768BF2001180BB /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -182,6 +279,42 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		098D2D1020D84D5C0057C1A4 /* Snowplow-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 098D2D1620D84D5C0057C1A4 /* Build configuration list for PBXNativeTarget "Snowplow-tvOS" */;
+			buildPhases = (
+				098D2D0C20D84D5C0057C1A4 /* Sources */,
+				098D2D0D20D84D5C0057C1A4 /* Frameworks */,
+				098D2D0E20D84D5C0057C1A4 /* Headers */,
+				098D2D0F20D84D5C0057C1A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Snowplow-tvOS";
+			productName = "Snowplow-tvOS";
+			productReference = 098D2D1120D84D5C0057C1A4 /* Snowplow.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		098D2D3020D858610057C1A4 /* SnowplowTests-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 098D2D3920D858610057C1A4 /* Build configuration list for PBXNativeTarget "SnowplowTests-tvOS" */;
+			buildPhases = (
+				098D2D2D20D858610057C1A4 /* Sources */,
+				098D2D2E20D858610057C1A4 /* Frameworks */,
+				098D2D2F20D858610057C1A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				098D2D3820D858610057C1A4 /* PBXTargetDependency */,
+			);
+			name = "SnowplowTests-tvOS";
+			productName = "SnowplowTests-tvOS";
+			productReference = 098D2D3120D858610057C1A4 /* SnowplowTests-tvOS.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		09DE740020768BF2001180BB /* Snowplow */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 09DE741520768BF2001180BB /* Build configuration list for PBXNativeTarget "Snowplow" */;
@@ -225,10 +358,16 @@
 		09DE73F820768BF2001180BB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0930;
+				LastSwiftUpdateCheck = 0940;
 				LastUpgradeCheck = 0930;
 				ORGANIZATIONNAME = Unsplash;
 				TargetAttributes = {
+					098D2D1020D84D5C0057C1A4 = {
+						CreatedOnToolsVersion = 9.4.1;
+					};
+					098D2D3020D858610057C1A4 = {
+						CreatedOnToolsVersion = 9.4.1;
+					};
 					09DE740020768BF2001180BB = {
 						CreatedOnToolsVersion = 9.3;
 						LastSwiftMigration = 0930;
@@ -252,11 +391,27 @@
 			targets = (
 				09DE740020768BF2001180BB /* Snowplow */,
 				09DE740920768BF2001180BB /* SnowplowTests */,
+				098D2D1020D84D5C0057C1A4 /* Snowplow-tvOS */,
+				098D2D3020D858610057C1A4 /* SnowplowTests-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		098D2D0F20D84D5C0057C1A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		098D2D2F20D858610057C1A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09DE73FF20768BF2001180BB /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,6 +446,55 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		098D2D0C20D84D5C0057C1A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098D2D2620D84DAF0057C1A4 /* SessionInfo.swift in Sources */,
+				098D2D1C20D84DA20057C1A4 /* String+Extensions.swift in Sources */,
+				098D2D2420D84DAF0057C1A4 /* SelfDescribingJSON.swift in Sources */,
+				098D2D2120D84DA80057C1A4 /* SchemaDefinition.swift in Sources */,
+				098D2D1B20D84DA20057C1A4 /* OperationQueue+Extensions.swift in Sources */,
+				098D2D2020D84DA80057C1A4 /* PropertyKey.swift in Sources */,
+				098D2D1D20D84DA20057C1A4 /* URL+Extensions.swift in Sources */,
+				098D2D1A20D84DA20057C1A4 /* NetworkRequest.swift in Sources */,
+				098D2D2520D84DAF0057C1A4 /* Session.swift in Sources */,
+				098D2D1E20D84DA80057C1A4 /* EventType.swift in Sources */,
+				098D2D2320D84DAF0057C1A4 /* Payload.swift in Sources */,
+				098D2D1920D84DA20057C1A4 /* ConcurrentOperation.swift in Sources */,
+				098D2D2B20D84E0A0057C1A4 /* SystemInfo.swift in Sources */,
+				098D2D2720D84DAF0057C1A4 /* Tracker.swift in Sources */,
+				098D2D2220D84DAF0057C1A4 /* Emitter.swift in Sources */,
+				098D2D1F20D84DA80057C1A4 /* PlatformName.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		098D2D2D20D858610057C1A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				098D2D4020D858A10057C1A4 /* Payload.swift in Sources */,
+				098D2D4920D858A50057C1A4 /* SchemaDefinition.swift in Sources */,
+				098D2D4120D858A10057C1A4 /* SelfDescribingJSON.swift in Sources */,
+				098D2D4320D858A10057C1A4 /* SessionInfo.swift in Sources */,
+				098D2D3E20D858980057C1A4 /* TrackerTests.swift in Sources */,
+				098D2D3D20D858980057C1A4 /* PayloadTests.swift in Sources */,
+				098D2D4720D858A50057C1A4 /* PlatformName.swift in Sources */,
+				098D2D4220D858A10057C1A4 /* Session.swift in Sources */,
+				098D2D4A20D858AA0057C1A4 /* ConcurrentOperation.swift in Sources */,
+				098D2D4C20D858AA0057C1A4 /* OperationQueue+Extensions.swift in Sources */,
+				098D2D4520D858A10057C1A4 /* Tracker.swift in Sources */,
+				098D2D4820D858A50057C1A4 /* PropertyKey.swift in Sources */,
+				098D2D3C20D858980057C1A4 /* EmitterTests.swift in Sources */,
+				098D2D4D20D858AA0057C1A4 /* String+Extensions.swift in Sources */,
+				098D2D3F20D858A10057C1A4 /* Emitter.swift in Sources */,
+				098D2D4420D858A10057C1A4 /* SystemInfo.swift in Sources */,
+				098D2D4620D858A50057C1A4 /* EventType.swift in Sources */,
+				098D2D4E20D858AA0057C1A4 /* URL+Extensions.swift in Sources */,
+				098D2D4B20D858AA0057C1A4 /* NetworkRequest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		09DE73FC20768BF2001180BB /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -307,6 +511,7 @@
 				09CEF79720CB290B006D19B6 /* Session.swift in Sources */,
 				09DE743020770CEA001180BB /* NetworkRequest.swift in Sources */,
 				09626CD92079091700B6FE59 /* SelfDescribingJSON.swift in Sources */,
+				098D2D2A20D84E0A0057C1A4 /* SystemInfo.swift in Sources */,
 				09CEF79320CB1677006D19B6 /* SchemaDefinition.swift in Sources */,
 				09CEF79020CB1660006D19B6 /* EventType.swift in Sources */,
 				09DE742E20770BA6001180BB /* OperationQueue+Extensions.swift in Sources */,
@@ -318,6 +523,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				09F4A5DA20CEEDD00029ED40 /* URL+Extensions.swift in Sources */,
+				098D2D2C20D84E0A0057C1A4 /* SystemInfo.swift in Sources */,
 				09CEF78720C9C5E2006D19B6 /* TrackerTests.swift in Sources */,
 				09F4A5DD20CEF4E00029ED40 /* SessionInfo.swift in Sources */,
 				09CEF79120CB1660006D19B6 /* EventType.swift in Sources */,
@@ -341,6 +547,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		098D2D3820D858610057C1A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 098D2D1020D84D5C0057C1A4 /* Snowplow-tvOS */;
+			targetProxy = 098D2D3720D858610057C1A4 /* PBXContainerItemProxy */;
+		};
 		09DE740D20768BF2001180BB /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 09DE740020768BF2001180BB /* Snowplow */;
@@ -349,6 +560,100 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		098D2D1720D84D5C0057C1A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Z7GT6KUQ38;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Snowplow-tvOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unsplash.Snowplow-tvOS";
+				PRODUCT_NAME = Snowplow;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Debug;
+		};
+		098D2D1820D84D5C0057C1A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "";
+				CODE_SIGN_STYLE = Automatic;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = Z7GT6KUQ38;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Snowplow-tvOS/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unsplash.Snowplow-tvOS";
+				PRODUCT_NAME = Snowplow;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 11.0;
+			};
+			name = Release;
+		};
+		098D2D3A20D858610057C1A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Z7GT6KUQ38;
+				INFOPLIST_FILE = "SnowplowTests-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unsplash.SnowplowTests-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 11.4;
+			};
+			name = Debug;
+		};
+		098D2D3B20D858610057C1A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = Z7GT6KUQ38;
+				INFOPLIST_FILE = "SnowplowTests-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.unsplash.SnowplowTests-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				SWIFT_VERSION = 4.0;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 11.4;
+			};
+			name = Release;
+		};
 		09DE741320768BF2001180BB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -563,6 +868,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		098D2D1620D84D5C0057C1A4 /* Build configuration list for PBXNativeTarget "Snowplow-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				098D2D1720D84D5C0057C1A4 /* Debug */,
+				098D2D1820D84D5C0057C1A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		098D2D3920D858610057C1A4 /* Build configuration list for PBXNativeTarget "SnowplowTests-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				098D2D3A20D858610057C1A4 /* Debug */,
+				098D2D3B20D858610057C1A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		09DE73FB20768BF2001180BB /* Build configuration list for PBXProject "Snowplow" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
