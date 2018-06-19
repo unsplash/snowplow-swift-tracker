@@ -47,45 +47,57 @@ extension Emitter {
 
     private func flushIfNeeded() {
         guard needsFlush() else { return }
-        flush()
+        flush { [unowned self] (error) in
+            if let error = error {
+                debugPrint(error)
+            }
+            self.delegate?.emitter(self, didFlush: error == nil)
+        }
     }
 
     private func flush(_ completion: ((_ error: Error?) -> Void)? = nil) {
-        var requests = [NetworkRequest]()
         switch requestMethod {
         case .get:
-            payloads.forEach { (payload) in
+            payloads.forEach { [unowned self] (payload) in
                 let request = NetworkRequest()
                 request.endpoint = "\(baseURL)/i"
                 request.method = .get
                 request.parameters = payload.content
-                requests.append(request)
+                request.completionBlock = {
+                    if let error = request.error {
+                        completion?(error)
+                        return
+                    }
+                    if let index = self.payloads.index(of: payload) {
+                        self.payloads.remove(at: index)
+                    }
+                    completion?(nil)
+                }
+                operationQueue.addOperationWithDependencies(request)
             }
 
         case .post:
+            let payloads = self.payloads
             let request = NetworkRequest()
             request.endpoint = "\(baseURL)/com.snowplowanalytics.snowplow/tp2"
             request.method = .post
             request.queryType = .json
             request.headers = ["content-type": "application/json; charset=utf-8"]
             request.parameters = SelfDescribingJSON(schema: .payloadData, data: payloads).dictionaryRepresentation
-            requests.append(request)
-        }
-
-        requests.forEach { [operationQueue, delegate] (request) in
             request.completionBlock = {
-                if request.error != nil {
-                    operationQueue.cancelAllOperations()
-                    delegate?.emitter(self, didFlush: false)
+                if let error = request.error {
+                    completion?(error)
                     return
                 }
-
-                guard operationQueue.operationCount == 0 else { return }
-                delegate?.emitter(self, didFlush: true)
+                for payload in payloads {
+                    if let index = self.payloads.index(of: payload) {
+                        self.payloads.remove(at: index)
+                    }
+                }
+                completion?(nil)
             }
+            operationQueue.addOperationWithDependencies(request)
         }
-
-        operationQueue.addOperations(requests, waitUntilFinished: false)
     }
 
 }
