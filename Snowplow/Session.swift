@@ -16,7 +16,7 @@ private let sessionFileURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(s
 private let sessionFileURL = URL(appFolder: .applicationSupport).appendingPathComponent(sessionFilename)
 #endif
 
-class Session {
+public class Session {
 
     // MARK: - Public properties
 

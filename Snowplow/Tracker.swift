@@ -8,11 +8,11 @@
 
 import Foundation
 
-class Tracker {
+public class Tracker {
 
-    init(applicationId: String,
-         emitter: Emitter,
-         name: String = "") {
+    public init(applicationId: String,
+                emitter: Emitter,
+                name: String = "") {
         self.applicationId = applicationId
         self.emitter = emitter
         self.name = name
@@ -22,7 +22,7 @@ class Tracker {
 
     // MARK: - Properties
 
-    var userId: String?
+    public var userId: String?
 
     // MARK: - Private properties
 
@@ -76,11 +76,11 @@ extension Tracker {
         emitter.input(payload)
     }
 
-    func trackPageView(uri: String,
-                       title: String? = nil,
-                       referrer: String? = nil,
-                       contexts: [SelfDescribingJSON]? = nil,
-                       timestamp: TimeInterval? = nil) {
+    public func trackPageView(uri: String,
+                              title: String? = nil,
+                              referrer: String? = nil,
+                              contexts: [SelfDescribingJSON]? = nil,
+                              timestamp: TimeInterval? = nil) {
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.pageView.rawValue, forKey: .event)
         payload.set(uri, forKey: .url)
@@ -89,13 +89,13 @@ extension Tracker {
         track(payload: payload, contexts: contexts, timestamp: timestamp)
     }
 
-    func trackStructEvent(category: String,
-                          action: String,
-                          label: String? = nil,
-                          property: String? = nil,
-                          value: Double? = nil,
-                          contexts: [SelfDescribingJSON]? = nil,
-                          timestamp: TimeInterval? = nil) {
+    public func trackStructEvent(category: String,
+                                 action: String,
+                                 label: String? = nil,
+                                 property: String? = nil,
+                                 value: Double? = nil,
+                                 contexts: [SelfDescribingJSON]? = nil,
+                                 timestamp: TimeInterval? = nil) {
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.structured.rawValue, forKey: .event)
         payload.set(category, forKey: .category)
@@ -112,9 +112,9 @@ extension Tracker {
         track(payload: payload, contexts: contexts, timestamp: timestamp)
     }
 
-    func trackUnstructEvent(event: Payload,
-                            contexts: [SelfDescribingJSON]? = nil,
-                            timestamp: TimeInterval? = nil) {
+    public func trackUnstructEvent(event: Payload,
+                                   contexts: [SelfDescribingJSON]? = nil,
+                                   timestamp: TimeInterval? = nil) {
         let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.unstructured.rawValue, forKey: .event)
@@ -149,4 +149,5 @@ extension Tracker {
         ]
         return SelfDescribingJSON(schema: .platformMobile, data: data)
     }
+
 }

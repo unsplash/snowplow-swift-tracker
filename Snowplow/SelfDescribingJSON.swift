@@ -8,33 +8,33 @@
 
 import Foundation
 
-struct SelfDescribingJSON {
+public struct SelfDescribingJSON {
 
-    let schema: SchemaDefinition
-    let data: Any?
+    let schema: String
+    let data: Any
 
-    init(schema: SchemaDefinition, data: Payload) {
-        self.schema = schema
+    public init(schema: SchemaDefinition, data: Payload) {
+        self.schema = schema.rawValue
         self.data = data.content
     }
 
-    init(schema: SchemaDefinition, data: [Payload]) {
-        self.schema = schema
+    public init(schema: SchemaDefinition, data: [Payload]) {
+        self.schema = schema.rawValue
         self.data = data.map({ $0.content })
     }
 
-    init(schema: SchemaDefinition, data: SelfDescribingJSON) {
-        self.schema = schema
+    public init(schema: SchemaDefinition, data: SelfDescribingJSON) {
+        self.schema = schema.rawValue
         self.data = data.dictionaryRepresentation
     }
 
-    init(schema: SchemaDefinition, data: [SelfDescribingJSON]) {
-        self.schema = schema
+    public init(schema: SchemaDefinition, data: [SelfDescribingJSON]) {
+        self.schema = schema.rawValue
         self.data = data.map({ $0.dictionaryRepresentation })
     }
 
-    init(schema: SchemaDefinition, data: [PropertyKey: Any]) {
-        self.schema = schema
+    public init(schema: SchemaDefinition, data: [PropertyKey: Any]) {
+        self.schema = schema.rawValue
         var dictionary = [String: Any]()
         for (key, value) in data {
             dictionary[key.rawValue] = value
@@ -42,10 +42,9 @@ struct SelfDescribingJSON {
         self.data = dictionary
     }
 
-    var dictionaryRepresentation: [String: Any] {
-        guard let data = data else { return [:] }
+    public var dictionaryRepresentation: [String: Any] {
         return [
-            PropertyKey.schema.rawValue: schema.rawValue,
+            PropertyKey.schema.rawValue: schema,
             PropertyKey.data.rawValue: data
         ]
     }

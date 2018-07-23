@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum PropertyKey: String {
+public enum PropertyKey: String {
 
     // Common
     case schema              = "schema"

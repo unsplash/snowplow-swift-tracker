@@ -8,7 +8,8 @@
 
 import Foundation
 
-struct SessionInfo: Codable {
+public struct SessionInfo: Codable {
+
     var userId: String
     var currentId: String
     var previousId: String?
@@ -46,4 +47,5 @@ struct SessionInfo: Codable {
         currentId = UUID().uuidString.lowercased()
         index += 1
     }
+
 }

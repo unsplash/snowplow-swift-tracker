@@ -8,13 +8,13 @@
 
 import Foundation
 
-protocol EmitterDelegate: class {
+public protocol EmitterDelegate: class {
     func emitter(_ emitter: Emitter, didFlush success: Bool)
 }
 
-class Emitter {
+public class Emitter {
 
-    init(baseURL: String, requestMethod: RequestMethod = .post, delegate: EmitterDelegate? = nil) {
+    public init(baseURL: String, requestMethod: RequestMethod = .post, delegate: EmitterDelegate? = nil) {
         self.baseURL = baseURL
         self.requestMethod = requestMethod
         self.delegate = delegate
@@ -25,15 +25,15 @@ class Emitter {
         flushIfNeeded()
     }
 
-    weak var delegate: EmitterDelegate?
-    var payloadFlushFrequency = 10
+    public weak var delegate: EmitterDelegate?
+    public var payloadFlushFrequency = 10
 
     // MARK: - Private
 
     private let baseURL: String
     private let requestMethod: RequestMethod
     private lazy var payloads = [Payload]()
-    private lazy var operationQueue = OperationQueue(with: "com.snowplow.emitter")
+    private lazy var operationQueue = OperationQueue(with: "com.snowplow.emitter", serial: true)
 
 }
 
@@ -102,9 +102,9 @@ extension Emitter {
 
 }
 
-extension Emitter {
+public extension Emitter {
 
-    enum RequestMethod {
+    public enum RequestMethod {
         case get
         case post
     }
