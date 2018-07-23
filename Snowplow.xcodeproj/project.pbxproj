@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09626CCF20771D8700B6FE59 /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74272076C8B7001180BB /* Emitter.swift */; };
+		09626CD020771D8D00B6FE59 /* ConcurrentOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE743120770D1B001180BB /* ConcurrentOperation.swift */; };
+		09626CD120771D8D00B6FE59 /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742F20770CEA001180BB /* NetworkRequest.swift */; };
+		09626CD220771D8D00B6FE59 /* OperationQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742D20770BA6001180BB /* OperationQueue+Extensions.swift */; };
+		09626CD320771D9200B6FE59 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742B20770B00001180BB /* Constants.swift */; };
 		09DE740B20768BF2001180BB /* Snowplow.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09DE740120768BF2001180BB /* Snowplow.framework */; };
 		09DE741220768BF2001180BB /* Snowplow.h in Headers */ = {isa = PBXBuildFile; fileRef = 09DE740420768BF2001180BB /* Snowplow.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		09DE741C2076A1CD001180BB /* Payload.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741B2076A1CD001180BB /* Payload.swift */; };
@@ -14,6 +19,11 @@
 		09DE74202076A9B6001180BB /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741F2076A9B6001180BB /* String+Extensions.swift */; };
 		09DE74212076A9B6001180BB /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE741F2076A9B6001180BB /* String+Extensions.swift */; };
 		09DE74262076B381001180BB /* PayloadTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74252076B381001180BB /* PayloadTests.swift */; };
+		09DE74282076C8B7001180BB /* Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE74272076C8B7001180BB /* Emitter.swift */; };
+		09DE742C20770B00001180BB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742B20770B00001180BB /* Constants.swift */; };
+		09DE742E20770BA6001180BB /* OperationQueue+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742D20770BA6001180BB /* OperationQueue+Extensions.swift */; };
+		09DE743020770CEA001180BB /* NetworkRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE742F20770CEA001180BB /* NetworkRequest.swift */; };
+		09DE743220770D1B001180BB /* ConcurrentOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DE743120770D1B001180BB /* ConcurrentOperation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +45,11 @@
 		09DE741B2076A1CD001180BB /* Payload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Payload.swift; sourceTree = "<group>"; };
 		09DE741F2076A9B6001180BB /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		09DE74252076B381001180BB /* PayloadTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayloadTests.swift; sourceTree = "<group>"; };
+		09DE74272076C8B7001180BB /* Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Emitter.swift; sourceTree = "<group>"; };
+		09DE742B20770B00001180BB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		09DE742D20770BA6001180BB /* OperationQueue+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "OperationQueue+Extensions.swift"; sourceTree = "<group>"; };
+		09DE742F20770CEA001180BB /* NetworkRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetworkRequest.swift; sourceTree = "<group>"; };
+		09DE743120770D1B001180BB /* ConcurrentOperation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConcurrentOperation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +93,8 @@
 			isa = PBXGroup;
 			children = (
 				09DE741E2076A9AB001180BB /* Utilities */,
+				09DE742B20770B00001180BB /* Constants.swift */,
+				09DE74272076C8B7001180BB /* Emitter.swift */,
 				09DE741B2076A1CD001180BB /* Payload.swift */,
 				09DE740420768BF2001180BB /* Snowplow.h */,
 				09DE740520768BF2001180BB /* Info.plist */,
@@ -97,6 +114,9 @@
 		09DE741E2076A9AB001180BB /* Utilities */ = {
 			isa = PBXGroup;
 			children = (
+				09DE743120770D1B001180BB /* ConcurrentOperation.swift */,
+				09DE742F20770CEA001180BB /* NetworkRequest.swift */,
+				09DE742D20770BA6001180BB /* OperationQueue+Extensions.swift */,
 				09DE741F2076A9B6001180BB /* String+Extensions.swift */,
 			);
 			name = Utilities;
@@ -231,6 +251,11 @@
 			files = (
 				09DE74202076A9B6001180BB /* String+Extensions.swift in Sources */,
 				09DE741C2076A1CD001180BB /* Payload.swift in Sources */,
+				09DE74282076C8B7001180BB /* Emitter.swift in Sources */,
+				09DE743220770D1B001180BB /* ConcurrentOperation.swift in Sources */,
+				09DE742C20770B00001180BB /* Constants.swift in Sources */,
+				09DE743020770CEA001180BB /* NetworkRequest.swift in Sources */,
+				09DE742E20770BA6001180BB /* OperationQueue+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,9 +263,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				09626CD120771D8D00B6FE59 /* NetworkRequest.swift in Sources */,
 				09DE741D2076A1CD001180BB /* Payload.swift in Sources */,
 				09DE74212076A9B6001180BB /* String+Extensions.swift in Sources */,
+				09626CD220771D8D00B6FE59 /* OperationQueue+Extensions.swift in Sources */,
+				09626CCF20771D8700B6FE59 /* Emitter.swift in Sources */,
+				09626CD020771D8D00B6FE59 /* ConcurrentOperation.swift in Sources */,
 				09DE74262076B381001180BB /* PayloadTests.swift in Sources */,
+				09626CD320771D9200B6FE59 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

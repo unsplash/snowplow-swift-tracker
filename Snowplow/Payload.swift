@@ -11,7 +11,7 @@ import Foundation
 struct Payload {
 
     mutating func set(_ value: String?, forKey key: String) {
-        self.container[key] = value
+        self.values[key] = value
     }
 
     mutating func set(_ object: [String: Any], forKey key: String, base64Encoded: Bool = false) throws {
@@ -32,14 +32,14 @@ struct Payload {
         set(base64String, forKey: key)
     }
 
-    private var container = [String: String]()
+    private(set) var values = [String: String]()
 
 }
 
 extension Payload {
 
     subscript(key: String) -> String? {
-        return container[key]
+        return values[key]
     }
 
 }
