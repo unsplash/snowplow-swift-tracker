@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 public struct Payload: Hashable {
 
@@ -34,7 +35,7 @@ public struct Payload: Hashable {
             let data = try JSONSerialization.data(withJSONObject: object, options: [])
             set(data, forKey: key)
         } catch {
-            debugPrint(error)
+            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
         }
     }
 
@@ -43,7 +44,7 @@ public struct Payload: Hashable {
             let data = try JSONEncoder().encode(payload.content)
             set(data, forKey: key)
         } catch {
-            debugPrint(error)
+            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
         }
     }
 

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 public struct SessionInfo: Codable {
 
@@ -38,7 +39,7 @@ public struct SessionInfo: Codable {
             let sessionData = try JSONEncoder().encode(self)
             try sessionData.write(to: url, options: .atomic)
         } catch {
-            debugPrint(error)
+            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
         }
     }
 

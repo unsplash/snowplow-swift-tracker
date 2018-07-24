@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import os
 
 public protocol EmitterDelegate: class {
     func emitter(_ emitter: Emitter, didFlush success: Bool)
@@ -49,7 +50,7 @@ extension Emitter {
         guard needsFlush() else { return }
         flush { [unowned self] (error) in
             if let error = error {
-                debugPrint(error)
+                os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
             }
             self.delegate?.emitter(self, didFlush: error == nil)
         }
