@@ -18,12 +18,12 @@ class EmitterTests: XCTestCase, EmitterDelegate {
         let emitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
         emitter.payloadFlushFrequency = 1
 
-        var payload = Payload(isBase64Encoded: false)
-        payload.add(values: [
+        let payload = Payload([
             .trackerVersion: "swift-test",
             .platform: PlatformName.mobile.rawValue,
             .event: EventType.structured.rawValue
-            ])
+            ], isBase64Encoded: false)
+
         emitter.input(payload)
 
         waitForExpectations(timeout: 10) { (error) in
@@ -31,6 +31,23 @@ class EmitterTests: XCTestCase, EmitterDelegate {
                 debugPrint(error)
             }
         }
+    }
+
+    func testEmitterPersistence() {
+        let emitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
+        let payloadCount = 3
+        let payload = Payload([
+            .trackerVersion: "swift-test",
+            .platform: PlatformName.mobile.rawValue,
+            .event: EventType.structured.rawValue
+            ], isBase64Encoded: false)
+
+        for _ in 0..<payloadCount {
+            emitter.input(payload)
+        }
+
+        let newEmitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
+        XCTAssert(newEmitter.payloadCount == payloadCount)
     }
 
     // MARK: - Emitter delegate

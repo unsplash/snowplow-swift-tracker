@@ -10,6 +10,47 @@ import XCTest
 
 class PayloadTests: XCTestCase {
 
+    func testCodable() {
+        // Set the values
+        let key = PropertyKey.data
+        let value: [String: Any] = [
+            "String": "Value",
+            "Int": 1,
+            "Object": [
+                "String": "Value",
+                "Int": 1
+            ]
+        ]
+        var payload = Payload()
+
+        // Make sure the payload is empty
+        XCTAssert(payload[key] == nil)
+
+        do {
+            let jsonData = try JSONSerialization.data(withJSONObject: value, options: [])
+            guard let jsonString = String(data: jsonData, encoding: .utf8) else {
+                XCTFail("Cannot convert JSON object to String.")
+                return
+            }
+
+            guard let base64String = jsonString.base64Value else {
+                XCTFail("Cannot convert to Base64 string.")
+                return
+            }
+
+            // Set the value using Base64 encoding
+            payload.set(value, forKey: key)
+            XCTAssert(payload[key] == base64String)
+
+            // Encode and decode the payload
+            let data = try JSONEncoder().encode(payload)
+            let decodedPayload = try JSONDecoder().decode(Payload.self, from: data)
+            XCTAssert(decodedPayload[key] == base64String)
+        } catch {
+            XCTFail(error.localizedDescription)
+        }
+    }
+
     func testSetStringValue() {
         // Set the values
         let key = PropertyKey.data

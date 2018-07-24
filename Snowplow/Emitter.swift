@@ -15,19 +15,28 @@ public protocol EmitterDelegate: class {
 
 public class Emitter {
 
-    public init(baseURL: String, requestMethod: RequestMethod = .post, delegate: EmitterDelegate? = nil) {
+    public init(baseURL: String,
+                requestMethod: RequestMethod = .post,
+                payloadPersistenceEnabled: Bool = true,
+                delegate: EmitterDelegate? = nil) {
         self.baseURL = baseURL
         self.requestMethod = requestMethod
+        self.isPayloadPersistenceEnabled = payloadPersistenceEnabled
         self.delegate = delegate
+        loadPayloads()
     }
 
     func input(_ payload: Payload) {
         payloads.append(payload)
+        savePayloads()
         flushIfNeeded()
     }
 
     public weak var delegate: EmitterDelegate?
     public var payloadFlushFrequency = 10
+    public var payloadCount: Int { return payloads.count }
+    public var cacheFilename = "SnowplowEmitterPayloads.data"
+    public let isPayloadPersistenceEnabled: Bool
 
     // MARK: - Private
 
@@ -72,6 +81,7 @@ extension Emitter {
                     if let index = self.payloads.index(of: payload) {
                         self.payloads.remove(at: index)
                     }
+                    self.savePayloads()
                     completion?(nil)
                 }
                 operationQueue.addOperationWithDependencies(request)
@@ -95,9 +105,43 @@ extension Emitter {
                         self.payloads.remove(at: index)
                     }
                 }
+                self.savePayloads()
                 completion?(nil)
             }
             operationQueue.addOperationWithDependencies(request)
+        }
+    }
+
+}
+
+// MARK: - Persistence
+
+private extension Emitter {
+
+    private func loadPayloads() {
+        guard isPayloadPersistenceEnabled else { return }
+
+        let fileURL = URL(appFolder: .caches).appendingPathComponent(cacheFilename)
+        guard FileManager().fileExists(atPath: fileURL.path) else { return }
+
+        do {
+            let encodedPayloads = try Data(contentsOf: fileURL)
+            payloads = try JSONDecoder().decode([Payload].self, from: encodedPayloads)
+        } catch {
+            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
+        }
+    }
+
+    private func savePayloads() {
+        guard isPayloadPersistenceEnabled else { return }
+
+        let fileURL = URL(appFolder: .caches).appendingPathComponent(cacheFilename)
+
+        do {
+            let encodedPayloads = try JSONEncoder().encode(payloads)
+            try encodedPayloads.write(to: fileURL, options: .atomic)
+        } catch {
+            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
         }
     }
 

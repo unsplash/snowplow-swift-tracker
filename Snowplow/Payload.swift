@@ -9,7 +9,7 @@
 import Foundation
 import os
 
-public struct Payload: Hashable {
+public struct Payload: Hashable, Codable {
 
     private(set) var content = [String: String]()
     private let isBase64Encoded: Bool
