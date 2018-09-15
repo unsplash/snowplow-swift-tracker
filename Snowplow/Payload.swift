@@ -9,9 +9,9 @@
 import Foundation
 import os
 
-public struct Payload: Hashable, Codable {
+public struct Payload: Hashable {
 
-    private(set) var content = [String: String]()
+    private(set) var content = [String: Any]()
     private let isBase64Encoded: Bool
     public var hashValue: Int = UUID().uuidString.hashValue
 
@@ -26,35 +26,27 @@ public struct Payload: Hashable, Codable {
         }
     }
 
+    public init(_ content: SelfDescribingJSON, isBase64Encoded: Bool = true) {
+        self.init(isBase64Encoded: isBase64Encoded)
+        for (key, value) in content.dictionaryRepresentation {
+            self.content[key] = value
+        }
+    }
+
     public mutating func set(_ value: String?, forKey key: PropertyKey) {
         content[key.rawValue] = value
     }
 
     public mutating func set(_ object: [String: Any], forKey key: PropertyKey) {
-        do {
-            let data = try JSONSerialization.data(withJSONObject: object, options: [])
-            set(data, forKey: key)
-        } catch {
-            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
-        }
+        content[key.rawValue] = object
     }
 
     public mutating func set(_ payload: Payload, forKey key: PropertyKey) {
-        do {
-            let data = try JSONEncoder().encode(payload.content)
-            set(data, forKey: key)
-        } catch {
-            os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
-        }
+        content[key.rawValue] = payload.content
     }
 
     public mutating func set(_ json: SelfDescribingJSON, forKey key: PropertyKey) {
         set(json.dictionaryRepresentation, forKey: key)
-    }
-
-    private mutating func set(_ data: Data, forKey key: PropertyKey) {
-        let string = isBase64Encoded ? data.base64EncodedString(options: []) : String(data: data, encoding: .utf8)
-        set(string, forKey: key)
     }
 
     public mutating func add(values: [PropertyKey: String]) {
@@ -67,9 +59,42 @@ public struct Payload: Hashable, Codable {
         content.merge(payload.content, uniquingKeysWith: { (current, _) in current })
     }
 
-    public subscript(key: PropertyKey) -> String? {
+    public subscript(key: PropertyKey) -> Any? {
         set { content[key.rawValue] = newValue }
         get { return content[key.rawValue] }
+    }
+
+    public static func == (lhs: Payload, rhs: Payload) -> Bool {
+        return lhs.hashValue == rhs.hashValue
+    }
+
+}
+
+extension Payload: Codable {
+
+    private enum CodingKeys: String, CodingKey {
+        case content
+        case isBase64Encoded
+        case hashValue
+    }
+
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let contentData = try container.decode(Data.self, forKey: .content)
+        guard let decodedContent = try JSONSerialization.jsonObject(with: contentData, options: []) as? [String: Any] else {
+            throw DecodingError.dataCorruptedError(forKey: CodingKeys.content, in: container, debugDescription: "")
+        }
+        content = decodedContent
+        isBase64Encoded = try container.decode(Bool.self, forKey: .isBase64Encoded)
+        hashValue = try container.decode(Int.self, forKey: .hashValue)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        let contentData = try JSONSerialization.data(withJSONObject: content, options: [])
+        try container.encode(contentData, forKey: .content)
+        try container.encode(isBase64Encoded, forKey: .isBase64Encoded)
+        try container.encode(hashValue, forKey: .hashValue)
     }
 
 }
