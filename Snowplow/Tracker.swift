@@ -89,6 +89,17 @@ extension Tracker {
         track(payload: payload, contexts: contexts, timestamp: timestamp)
     }
 
+    public func trackScreenView(name: String,
+                                identifier: String? = nil) {
+        var data: [PropertyKey: Any] = [.name: name]
+        if let identifier = identifier {
+            data[.id] = identifier
+        }
+        let json = SelfDescribingJSON(schema: .screenView, data: data)
+        let payload = Payload(json, isBase64Encoded: isBase64Encoded)
+        track(payload: payload)
+    }
+
     public func trackStructEvent(category: String,
                                  action: String,
                                  label: String? = nil,
