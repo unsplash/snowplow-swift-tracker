@@ -13,7 +13,7 @@ private let sessionFilename = "SnowplowSession.json"
 #if os(tvOS)
 private let sessionFileURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(sessionFilename)")
 #else
-private let sessionFileURL = URL(appFolder: .applicationSupport).appendingPathComponent(sessionFilename)
+private let sessionFileURL = URL(appFolder: .caches).appendingPathComponent(sessionFilename)
 #endif
 
 public class Session {
