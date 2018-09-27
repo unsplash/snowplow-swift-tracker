@@ -92,7 +92,8 @@ extension Emitter {
             let request = NetworkRequest()
             request.endpoint = "\(baseURL)/com.snowplowanalytics.snowplow/tp2"
             request.method = .post
-            request.queryType = .json
+            request.type = .body
+            request.format = .json
             request.headers = ["content-type": "application/json; charset=utf-8"]
             request.parameters = SelfDescribingJSON(schema: .payloadData, data: payloads).dictionaryRepresentation
             request.completionBlock = {

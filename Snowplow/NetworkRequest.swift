@@ -14,8 +14,14 @@ class NetworkRequest: ConcurrentOperation {
         case get, post, put, delete
     }
 
+    enum QueryFormat {
+        case json
+        case urlEncoded
+    }
+
     enum QueryType {
-        case json, path
+        case body
+        case path
     }
 
     enum RequestError: Error {
@@ -33,40 +39,77 @@ class NetworkRequest: ConcurrentOperation {
         }
     }
 
-    var endpoint: String?
-    var method: NetworkRequest.Method = .get
-    var queryType: NetworkRequest.QueryType = .path
+    var endpoint = ""
+    var method = NetworkRequest.Method.get
+    var format = NetworkRequest.QueryFormat.urlEncoded
+    var type = NetworkRequest.QueryType.path
     var headers: [String: String]?
     var parameters: [String: Any]?
+    var timeoutInterval = 30.0
 
     // MARK: - Prepare the request
 
+    func prepareURLComponents() -> URLComponents? {
+        guard let url = URL(string: endpoint) else {
+            return nil
+        }
+        return URLComponents(url: url, resolvingAgainstBaseURL: false)
+    }
+
+    func prepareParameters() -> [String: Any]? {
+        return parameters
+    }
+
+    func prepareHeaders() -> [String: String]? {
+        return headers
+    }
+
     func prepareURLRequest() throws -> URLRequest {
-        guard let endpoint = endpoint, let url = URL(string: endpoint) else {
+        let parameters = prepareParameters()
+
+        guard let url = prepareURLComponents()?.url else {
             throw RequestError.invalidURL
         }
 
-        switch queryType {
-        case .json:
-            var request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30.0)
+        switch type {
+        case .body:
+            var mutableRequest = URLRequest(url: url,
+                                            cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                                            timeoutInterval: timeoutInterval)
             if let parameters = parameters {
-                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                switch format {
+                case .json:
+                    mutableRequest.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                case .urlEncoded:
+                    mutableRequest.httpBody = urlEncodedParameters(parameters).data(using: .utf8)
+                }
             }
-
-            return request
+            return mutableRequest
 
         case .path:
-            var query = ""
-
-            parameters?.forEach { key, value in
-                query = "\(query)\(key)=\(value)&"
-            }
-
             var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
-            components.query = query
-
-            return URLRequest(url: components.url!, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 30.0)
+            components.query = urlEncodedParameters(parameters)
+            return URLRequest(url: components.url!,
+                              cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
+                              timeoutInterval: timeoutInterval)
         }
+    }
+
+    private func urlEncodedParameters(_ parameters: [String: Any]?) -> String {
+        var allowedCharacterSet = CharacterSet.alphanumerics
+        allowedCharacterSet.insert(charactersIn: ".-_")
+
+        var query = ""
+        parameters?.forEach { key, value in
+            let encodedValue: String
+            if let value = value as? String {
+                encodedValue = value.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet) ?? ""
+            } else {
+                encodedValue = "\(value)"
+            }
+            query = "\(query)\(key)=\(encodedValue)&"
+        }
+        return query
     }
 
     // MARK: - Execute the request
@@ -77,7 +120,7 @@ class NetworkRequest: ConcurrentOperation {
             return
         }
 
-        request.allHTTPHeaderFields = headers
+        request.allHTTPHeaderFields = prepareHeaders()
         request.httpMethod = method.rawValue
 
         let session = URLSession.shared

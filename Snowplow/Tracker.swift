@@ -67,8 +67,11 @@ extension Tracker {
         let data = allContexts
         let context = SelfDescribingJSON(schema: .contexts, data: data)
 
-        let contextKey: PropertyKey = isBase64Encoded ? .contextEncoded : .context
-        payload.set(context, forKey: contextKey)
+        if isBase64Encoded, let contextValue = context.base64EncodedRepresentation {
+            payload.set(contextValue, forKey: .contextEncoded)
+        } else {
+            payload.set(context, forKey: .context)
+        }
 
         let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
         payload.set(String.init(describing: timestamp), forKey: .deviceTimestamp)
@@ -97,7 +100,7 @@ extension Tracker {
         }
         let json = SelfDescribingJSON(schema: .screenView, data: data)
         let payload = Payload(json, isBase64Encoded: isBase64Encoded)
-        track(payload: payload)
+        trackUnstructEvent(event: payload)
     }
 
     public func trackStructEvent(category: String,
@@ -127,10 +130,14 @@ extension Tracker {
                                    contexts: [SelfDescribingJSON]? = nil,
                                    timestamp: TimeInterval? = nil) {
         let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
+        guard let eventValue = json.base64EncodedRepresentation else { return }
+
         var payload = Payload(isBase64Encoded: isBase64Encoded)
         payload.set(EventType.unstructured.rawValue, forKey: .event)
+
         let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
-        payload.set(json, forKey: eventKey)
+        payload.set(eventValue, forKey: eventKey)
+
         track(payload: payload, contexts: contexts, timestamp: timestamp)
     }
 
