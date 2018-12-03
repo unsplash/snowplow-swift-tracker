@@ -54,7 +54,9 @@ public struct SelfDescribingJSON {
 extension SelfDescribingJSON {
 
     public var base64EncodedRepresentation: String? {
-        guard let data = try? JSONSerialization.data(withJSONObject: dictionaryRepresentation, options: []) else { return nil }
+        guard let data = try? JSONSerialization.data(withJSONObject: dictionaryRepresentation, options: []) else {
+            return nil
+        }
         return data.base64EncodedString()
     }
 

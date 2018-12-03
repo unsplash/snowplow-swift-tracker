@@ -96,7 +96,7 @@ extension Tracker {
                                 identifier: String? = nil) {
         var data: [PropertyKey: Any] = [.name: name]
         if let identifier = identifier {
-            data[.id] = identifier
+            data[.identifier] = identifier
         }
         let json = SelfDescribingJSON(schema: .screenView, data: data)
         let payload = Payload(json, isBase64Encoded: isBase64Encoded)

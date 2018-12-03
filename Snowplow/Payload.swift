@@ -80,8 +80,8 @@ extension Payload: Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        let contentData = try container.decode(Data.self, forKey: .content)
-        guard let decodedContent = try JSONSerialization.jsonObject(with: contentData, options: []) as? [String: Any] else {
+        let data = try container.decode(Data.self, forKey: .content)
+        guard let decodedContent = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else {
             throw DecodingError.dataCorruptedError(forKey: CodingKeys.content, in: container, debugDescription: "")
         }
         content = decodedContent

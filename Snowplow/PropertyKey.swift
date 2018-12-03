@@ -54,8 +54,8 @@ public enum PropertyKey: String {
     case referrer = "refr"
 
     // Screen view event
-    case name = "name"
-    case id   = "id"
+    case name       = "name"
+    case identifier = "id"
 
     // Structured event
     case category = "se_ca"
