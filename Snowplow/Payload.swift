@@ -13,7 +13,11 @@ public struct Payload: Hashable {
 
     private(set) var content = [String: Any]()
     private let isBase64Encoded: Bool
-    public var hashValue: Int = UUID().uuidString.hashValue
+    public var hash: String = UUID().uuidString
+
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(hash)
+    }
 
     public init(isBase64Encoded: Bool = true) {
         self.isBase64Encoded = isBase64Encoded
@@ -86,7 +90,7 @@ extension Payload: Codable {
         }
         content = decodedContent
         isBase64Encoded = try container.decode(Bool.self, forKey: .isBase64Encoded)
-        hashValue = try container.decode(Int.self, forKey: .hashValue)
+        hash = try container.decode(String.self, forKey: .hashValue)
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -94,7 +98,7 @@ extension Payload: Codable {
         let contentData = try JSONSerialization.data(withJSONObject: content, options: [])
         try container.encode(contentData, forKey: .content)
         try container.encode(isBase64Encoded, forKey: .isBase64Encoded)
-        try container.encode(hashValue, forKey: .hashValue)
+        try container.encode(hash, forKey: .hashValue)
     }
 
 }

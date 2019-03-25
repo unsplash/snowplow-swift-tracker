@@ -78,7 +78,7 @@ extension Emitter {
                         completion?(error)
                         return
                     }
-                    if let index = self.payloads.index(of: payload) {
+                    if let index = self.payloads.firstIndex(of: payload) {
                         self.payloads.remove(at: index)
                     }
                     self.savePayloads()
@@ -102,7 +102,7 @@ extension Emitter {
                     return
                 }
                 for payload in payloads {
-                    if let index = self.payloads.index(of: payload) {
+                    if let index = self.payloads.firstIndex(of: payload) {
                         self.payloads.remove(at: index)
                     }
                 }
@@ -150,7 +150,7 @@ private extension Emitter {
 
 public extension Emitter {
 
-    public enum RequestMethod {
+    enum RequestMethod {
         case get
         case post
     }
