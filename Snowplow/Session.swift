@@ -7,7 +7,11 @@
 //
 
 import Foundation
+#if os(macOS)
+import AppKit
+#else
 import UIKit
+#endif
 
 private let sessionFilename = "SnowplowSession.json"
 #if os(tvOS)
@@ -67,7 +71,12 @@ public class Session {
     // MARK: - Session
 
     @objc private func resetIfNeeded(_ timer: Timer) {
+        #if os(macOS)
+        let isBackground = !NSApplication.shared.isActive
+        #else
         let isBackground = UIApplication.shared.applicationState == .background
+        #endif
+
         let timeout = isBackground ? backgroundTimeout : foregroundTimeout
 
         if Date().timeIntervalSince1970 - lastAccessTime > timeout {

@@ -6,8 +6,12 @@
 //  Copyright © 2018 Unsplash. All rights reserved.
 //
 
-import UIKit
 import Foundation
+#if os(macOS)
+import AppKit
+#else
+import UIKit
+#endif
 
 struct SystemInfo {
 
@@ -22,16 +26,22 @@ struct SystemInfo {
     static var platform: String {
         #if os(tvOS)
         return PlatformName.television.rawValue
-        #endif
-
-        #if os(iOS) || os(watchOS)
+        #elseif os(iOS) || os(watchOS)
         return PlatformName.mobile.rawValue
+        #else
+        return PlatformName.computer.rawValue
         #endif
     }
 
     static var screenResolution: String {
+        #if os(macOS)
+        let size = NSScreen.main?.frame.size ?? .zero
+        let scale = NSScreen.main?.backingScaleFactor ?? 1
+        #else
         let size = UIScreen.main.bounds.size
         let scale = UIScreen.main.scale
+        #endif
+
         let width = size.width * scale
         let height = size.height * scale
         return String(format: "%.0fx%.0f", width, height)
@@ -40,20 +50,28 @@ struct SystemInfo {
     static let deviceVendor = "Apple Inc."
 
     static var deviceModel: String {
+        #if os(macOS)
+        return "Mac"
+        #else
         return UIDevice.current.model
+        #endif
     }
 
     static var osVersion: String {
+        #if os(macOS)
+        return ProcessInfo().operatingSystemVersionString
+        #else
         return UIDevice.current.systemVersion
+        #endif
     }
 
     static var osType: String {
         #if os(tvOS)
         return "tvos"
-        #endif
-
-        #if os(iOS) || os(watchOS)
+        #elseif os(iOS) || os(watchOS)
         return "ios"
+        #else
+        return "mac"
         #endif
     }
 
