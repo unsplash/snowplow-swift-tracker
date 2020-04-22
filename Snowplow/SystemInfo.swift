@@ -59,7 +59,8 @@ struct SystemInfo {
 
     static var osVersion: String {
         #if os(macOS)
-        return ProcessInfo().operatingSystemVersionString
+        let osVersion = ProcessInfo().operatingSystemVersion
+        return [osVersion.majorVersion, osVersion.minorVersion, osVersion.patchVersion].map({ "\($0)" }).joined(separator: ".")
         #else
         return UIDevice.current.systemVersion
         #endif
