@@ -51,7 +51,11 @@ struct SystemInfo {
 
     static var deviceModel: String {
         #if os(macOS)
-        return "Mac"
+        var size = 0
+        sysctlbyname("hw.model", nil, &size, nil, 0)
+        var machine = [CChar](repeating: 0,  count: size)
+        sysctlbyname("hw.model", &machine, &size, nil, 0)
+        return String(cString: machine)
         #else
         return UIDevice.current.model
         #endif
