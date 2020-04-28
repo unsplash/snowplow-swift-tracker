@@ -165,7 +165,11 @@ extension Tracker {
             .platformDeviceManufacturer: SystemInfo.deviceVendor,
             .platformDeviceModel: SystemInfo.deviceModel
         ]
-        return SelfDescribingJSON(schema: .platformMobile, data: data)
+        #if os(macOS)
+            return SelfDescribingJSON(schema: .platformDesktop, data: data)
+        #else
+            return SelfDescribingJSON(schema: .platformMobile, data: data)
+        #endif
     }
 
 }
