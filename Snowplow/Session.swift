@@ -41,12 +41,22 @@ public class Session {
 
     // MARK: - Initialization
 
-    init() {
+    init(info: SessionInfo? = nil) {
         lastAccessTime = Date().timeIntervalSince1970
-        sessionInfo = SessionInfo(from: sessionFileURL) ?? SessionInfo(userId: UUID().uuidString.lowercased(),
-                                                                       currentId: UUID().uuidString.lowercased(),
-                                                                       previousId: nil,
-                                                                       index: 0)
+
+        if var initialSessionInfo = info ?? SessionInfo(from: sessionFileURL) {
+            initialSessionInfo.update()
+            sessionInfo = initialSessionInfo
+        } else {
+            sessionInfo = SessionInfo(userId: UUID().uuidString.lowercased(),
+                                      currentId: UUID().uuidString.lowercased(),
+                                      previousId: nil,
+                                      index: 0)
+        }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willTerminateNotification, object: nil)
+
         startTracking()
     }
 
@@ -114,10 +124,20 @@ public class Session {
 
 extension Session {
 
-    private func saveSession() {
+    @objc private func saveSession() {
         var savedSessionInfo = sessionInfo
         savedSessionInfo.previousId = nil
         savedSessionInfo.write(to: sessionFileURL)
+
+        NotificationCenter.default.post(name: Snowplow.Session.didSaveNotification, object: savedSessionInfo)
     }
+
+}
+
+// MARK: - Notifications
+
+public extension Session {
+
+    static let didSaveNotification = Notification.Name(rawValue: "Snowplow.SessionDidSave")
 
 }

@@ -12,12 +12,13 @@ public class Tracker {
 
     public init(applicationId: String,
                 emitter: Emitter,
+                sessionInfo: SessionInfo? = nil,
                 name: String = "") {
         self.applicationId = applicationId
         self.emitter = emitter
         self.name = name
         self.isBase64Encoded = true
-        self.session = Session()
+        self.session = Session(info: sessionInfo)
     }
 
     // MARK: - Properties
