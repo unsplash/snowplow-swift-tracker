@@ -9,7 +9,7 @@
 import Foundation
 import os
 
-public protocol EmitterDelegate: class {
+public protocol EmitterDelegate: AnyObject {
     func emitter(_ emitter: Emitter, didFlush success: Bool)
 }
 
