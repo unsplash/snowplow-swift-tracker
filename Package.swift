@@ -1,21 +1,18 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.8
 
 import PackageDescription
 
 let package = Package(
     name: "Snowplow",
     platforms: [
-        .iOS(.v11),
-        .macOS(.v10_12),
-        .tvOS(.v11)
+        .iOS(.v15),
+        .macOS(.v11),
+        .tvOS(.v15)
     ],
     products: [
-    .library(name: "Snowplow",
-             targets: ["Snowplow"])
+        .library(name: "Snowplow", targets: ["Snowplow"])
     ],
     targets: [
-    .target(
-        name: "Snowplow",
-        path: "Snowplow")
+        .target(name: "Snowplow", path: "Snowplow")
     ]
 )
