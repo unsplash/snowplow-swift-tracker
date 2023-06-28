@@ -27,7 +27,7 @@ public class Tracker {
 
     // MARK: - Private properties
 
-    private let trackerVersion = "0.1"
+    private let trackerVersion = "0.2"
     private let applicationId: String
     private let name: String
     private let isBase64Encoded: Bool
