@@ -58,7 +58,6 @@ extension Tracker {
                contexts: [SelfDescribingJSON]? = nil,
                timestamp: TimeInterval? = nil) {
         var payload = payload
-
         payload.merge(payload: trackerPayload)
 
         let eventId = UUID().uuidString.lowercased()
