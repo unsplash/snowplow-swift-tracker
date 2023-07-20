@@ -7,17 +7,12 @@
 //
 
 import Foundation
+import OSLog
+
 #if os(macOS)
 import AppKit
 #else
 import UIKit
-#endif
-
-private let sessionFilename = "SnowplowSession.json"
-#if os(tvOS)
-private let sessionFileURL = URL(fileURLWithPath: "\(NSTemporaryDirectory())/\(sessionFilename)")
-#else
-private let sessionFileURL = URL(appFolder: .caches).appendingPathComponent(sessionFilename)
 #endif
 
 public class Session {
@@ -38,24 +33,43 @@ public class Session {
     private var sessionInfo: SessionInfo
     private var timer: Timer?
     private var lastAccessTime: TimeInterval
+    private let sessionFilename: String = "SnowplowSession.json"
+    private var sessionFileURL: URL?
 
     // MARK: - Initialization
 
     init(info: SessionInfo? = nil) {
         lastAccessTime = Date().timeIntervalSince1970
 
-        if var initialSessionInfo = info ?? SessionInfo(from: sessionFileURL) {
-            initialSessionInfo.update()
-            sessionInfo = initialSessionInfo
-        } else {
-            sessionInfo = SessionInfo(userId: UUID().uuidString.lowercased(),
-                                      currentId: UUID().uuidString.lowercased(),
-                                      previousId: nil,
-                                      index: 0)
+        var initialSessionInfo: SessionInfo? = info
+
+        if initialSessionInfo == nil {
+            do {
+                let bundleId: String = Bundle.main.bundleIdentifier ?? ""
+                var url = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                url.appendPathComponent("Snowplow/\(bundleId)/\(sessionFilename)")
+                sessionFileURL = url
+
+                initialSessionInfo = SessionInfo(from: url)
+            } catch {
+                os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
+            }
         }
 
+        initialSessionInfo?.update()
+
+        sessionInfo = initialSessionInfo ?? SessionInfo(userId: UUID().uuidString.lowercased(),
+                                                        currentId: UUID().uuidString.lowercased(),
+                                                        previousId: nil,
+                                                        index: 0)
+
+        #if os(macOS)
+        NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: NSApplication.willResignActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: NSApplication.willTerminateNotification, object: nil)
+        #else
         NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willResignActiveNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willTerminateNotification, object: nil)
+        #endif
 
         startTracking()
     }
@@ -125,6 +139,8 @@ public class Session {
 extension Session {
 
     @objc private func saveSession() {
+        guard let sessionFileURL else { return }
+
         var savedSessionInfo = sessionInfo
         savedSessionInfo.previousId = nil
         savedSessionInfo.write(to: sessionFileURL)

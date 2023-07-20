@@ -36,6 +36,11 @@ public struct SessionInfo: Codable {
 
     func write(to url: URL) {
         do {
+            let folderURL = url.deletingLastPathComponent()
+            if FileManager.default.fileExists(atPath: folderURL.path) == false {
+                try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
+            }
+
             let sessionData = try JSONEncoder().encode(self)
             try sessionData.write(to: url, options: .atomic)
         } catch {
