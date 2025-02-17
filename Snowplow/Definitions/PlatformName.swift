@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum PlatformName: String {
+enum PlatformName: String, Codable {
   case web
   case mobile          = "mob"
   case computer        = "pc"

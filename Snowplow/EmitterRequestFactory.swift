@@ -38,16 +38,16 @@ struct EmitterRequestFactory {
     guard let endpointURL = URL(string: "\(baseURL)/com.snowplowanalytics.snowplow/tp2") else {
       throw URLError(.badURL)
     }
-    
-    let parameters = SelfDescribingJSON(schema: .payloadData, data: payloads).dictionaryRepresentation
-    
+
+    let finalJSONPayload = SelfDescribingJSON(schema: .payloadData, data: payloads)
+
     var request: URLRequest = .init(url: endpointURL,
                                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                                     timeoutInterval: timeoutInterval)
     request.httpMethod = "POST"
     request.allHTTPHeaderFields = ["content-type": "application/json; charset=utf-8"]
-    request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
-    
+    request.httpBody = try JSONEncoder().encode(finalJSONPayload)
+
     return request
   }
   

@@ -9,55 +9,47 @@
 import Foundation
 
 public struct SelfDescribingJSON {
-  
-  let schema: String
-  let data: Any
-  
-  public init(schema: SchemaDefinition, data: Payload) {
-    self.schema = schema.rawValue
-    self.data = data.content
+  let schema: SchemaDefinition
+  let data: Codable
+
+  public init(schema: SchemaDefinition, data: Codable) {
+    self.schema = schema
+    self.data = data
   }
-  
-  public init(schema: SchemaDefinition, data: [Payload]) {
-    self.schema = schema.rawValue
-    self.data = data.map({ $0.content })
+}
+
+extension SelfDescribingJSON: Codable {
+  private enum CodingKeys: CodingKey {
+    case schema
+    case data
   }
-  
-  public init(schema: SchemaDefinition, data: SelfDescribingJSON) {
-    self.schema = schema.rawValue
-    self.data = data.dictionaryRepresentation
-  }
-  
-  public init(schema: SchemaDefinition, data: [SelfDescribingJSON]) {
-    self.schema = schema.rawValue
-    self.data = data.map({ $0.dictionaryRepresentation })
-  }
-  
-  public init(schema: SchemaDefinition, data: [PropertyKey: Any]) {
-    self.schema = schema.rawValue
-    var dictionary = [String: Any]()
-    for (key, value) in data {
-      dictionary[key.rawValue] = value
+
+  public init(from decoder: any Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    schema = try container.decode(SchemaDefinition.self, forKey: .schema)
+    if let jsonData = try? container.decode(SelfDescribingJSON.self, forKey: .data) {
+      data = jsonData
+    } else if let stringData = try? container.decode(String.self, forKey: .data) {
+      data = stringData
+    } else if let payloadData = try? container.decode(Payload.self, forKey: .data) {
+      data = payloadData
+    } else {
+      throw DecodingError.dataCorruptedError(forKey: CodingKeys.data, in: container, debugDescription: "Cannot decode data.")
     }
-    self.data = dictionary
   }
-  
-  public var dictionaryRepresentation: [String: Any] {
-    return [
-      PropertyKey.schema.rawValue: schema,
-      PropertyKey.data.rawValue: data
-    ]
+
+  public func encode(to encoder: any Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(schema, forKey: .schema)
+    try container.encode(data, forKey: .data)
   }
-  
 }
 
 extension SelfDescribingJSON {
-  
   public var base64EncodedRepresentation: String? {
-    guard let data = try? JSONSerialization.data(withJSONObject: dictionaryRepresentation, options: []) else {
+    guard let data = try? JSONEncoder().encode(data) else {
       return nil
     }
     return data.base64EncodedString()
   }
-  
 }

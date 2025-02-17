@@ -9,7 +9,7 @@
 import Foundation
 
 public class Tracker {
-  
+
   public init(applicationId: String,
               emitter: Emitter,
               name: String = "") {
@@ -19,20 +19,20 @@ public class Tracker {
     self.isBase64Encoded = true
     self.session = Session()
   }
-  
+
   // MARK: - Properties
-  
+
   public var userId: String?
-  
+
   // MARK: - Private properties
-  
+
   private let trackerVersion = "1.0"
   private let applicationId: String
   private let name: String
   private let isBase64Encoded: Bool
   private let emitter: Emitter
   private let session: Session
-  
+
   private var trackerPayload: Payload {
     var values = [PropertyKey: String]()
     values[.trackerVersion] = trackerVersion
@@ -46,38 +46,38 @@ public class Tracker {
     values[.userId] = userId
     return Payload(values, isBase64Encoded: isBase64Encoded)
   }
-  
+
 }
 
 // MARK: - Tracking
 
 extension Tracker {
-  
+
   func track(payload: Payload,
              contexts: [SelfDescribingJSON]? = nil,
              timestamp: TimeInterval? = nil) {
     var payload = payload
     payload.merge(payload: trackerPayload)
-    
+
     let eventId = UUID().uuidString.lowercased()
     payload.set(eventId, forKey: .uuid)
-    
+
     let allContexts = finalContexts(with: contexts, eventId: eventId)
     let data = allContexts
     let context = SelfDescribingJSON(schema: .contexts, data: data)
-    
+
     if isBase64Encoded, let contextValue = context.base64EncodedRepresentation {
       payload.set(contextValue, forKey: .contextEncoded)
     } else {
       payload.set(context, forKey: .context)
     }
-    
+
     let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
     payload.set(String.init(describing: timestamp), forKey: .deviceTimestamp)
-    
+
     emitter.input(payload)
   }
-  
+
   public func trackPageView(uri: String,
                             title: String? = nil,
                             referrer: String? = nil,
@@ -90,18 +90,18 @@ extension Tracker {
     payload.set(referrer, forKey: .referrer)
     track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
-  
+
   public func trackScreenView(name: String,
                               identifier: String? = nil) {
-    var data: [PropertyKey: Any] = [.name: name]
+    var data: [PropertyKey: String] = [.name: name]
     if let identifier = identifier {
       data[.identifier] = identifier
     }
     let json = SelfDescribingJSON(schema: .screenView, data: data)
-    let payload = Payload(json, isBase64Encoded: isBase64Encoded)
+    let payload = Payload(json, base64Encoded: isBase64Encoded)
     trackUnstructEvent(event: payload)
   }
-  
+
   public func trackStructEvent(category: String,
                                action: String,
                                label: String? = nil,
@@ -124,39 +124,39 @@ extension Tracker {
     }
     track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
-  
+
   public func trackUnstructEvent(event: Payload,
                                  contexts: [SelfDescribingJSON]? = nil,
                                  timestamp: TimeInterval? = nil) {
     let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
     guard let eventValue = json.base64EncodedRepresentation else { return }
-    
+
     var payload = Payload(isBase64Encoded: isBase64Encoded)
     payload.set(EventType.unstructured.rawValue, forKey: .event)
-    
+
     let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
     payload.set(eventValue, forKey: eventKey)
-    
+
     track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
-  
+
 }
 
 // MARK: - Context
 
 extension Tracker {
-  
+
   private func finalContexts(with contexts: [SelfDescribingJSON]?, eventId: String) -> [SelfDescribingJSON] {
     var allContexts = contexts ?? [SelfDescribingJSON]()
-    
+
     let sessionContext = session.sessionContext(with: eventId)
     allContexts.append(sessionContext)
-    
+
     allContexts.append(platformContext)
-    
+
     return allContexts
   }
-  
+
   private var platformContext: SelfDescribingJSON {
     let data: [PropertyKey: String] = [
       .platformOSType: SystemInfo.osType,
@@ -170,5 +170,5 @@ extension Tracker {
     return SelfDescribingJSON(schema: .platformMobile, data: data)
 #endif
   }
-  
+
 }

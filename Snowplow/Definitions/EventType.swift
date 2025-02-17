@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum EventType: String {
+enum EventType: String, Codable {
   case pageView         = "pv"
   case structured       = "se"
   case unstructured     = "ue"
