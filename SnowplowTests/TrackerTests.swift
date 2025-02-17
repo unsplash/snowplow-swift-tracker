@@ -10,45 +10,45 @@ import XCTest
 
 class TrackerTests: XCTestCase, EmitterDelegate {
 
-    private var emitterExpectation: XCTestExpectation?
+  private var emitterExpectation: XCTestExpectation?
 
-    private lazy var tracker: Tracker = {
-        let emitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
-        emitter.payloadFlushFrequency = 1
+  private lazy var tracker: Tracker = {
+    let emitter = Emitter(baseURL: "http://localhost:8080", requestMethod: .post, delegate: self)
+    emitter.payloadFlushFrequency = 1
 
-        return Tracker(applicationId: "swift-test-app",
-                              emitter: emitter,
-                              name: "test")
-    }()
+    return Tracker(applicationId: "swift-test-app",
+                   emitter: emitter,
+                   name: "test")
+  }()
 
-    func testTrackPageView() {
-        emitterExpectation = expectation(description: "Success")
+  func testTrackPageView() {
+    emitterExpectation = expectation(description: "Success")
 
-        tracker.trackPageView(uri: "test-page")
+    tracker.trackPageView(uri: "test-page")
 
-        waitForExpectations(timeout: 10) { (error) in
-            if let error = error {
-                debugPrint(error)
-            }
-        }
+    waitForExpectations(timeout: 10) { (error) in
+      if let error = error {
+        debugPrint(error)
+      }
     }
+  }
 
-    func testTrackStructEvent() {
-        emitterExpectation = expectation(description: "Success")
+  func testTrackStructEvent() {
+    emitterExpectation = expectation(description: "Success")
 
-        tracker.trackStructEvent(category: "test-category", action: "test-action")
+    tracker.trackStructEvent(category: "test-category", action: "test-action")
 
-        waitForExpectations(timeout: 10) { (error) in
-            if let error = error {
-                debugPrint(error)
-            }
-        }
+    waitForExpectations(timeout: 10) { (error) in
+      if let error = error {
+        debugPrint(error)
+      }
     }
+  }
 
-    // MARK: - Emitter delegate
+  // MARK: - Emitter delegate
 
-    func emitter(_ emitter: Emitter, didFlush success: Bool) {
-        emitterExpectation?.fulfill()
-    }
+  func emitter(_ emitter: Emitter, didFlush success: Bool) {
+    emitterExpectation?.fulfill()
+  }
 
 }

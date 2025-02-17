@@ -9,12 +9,12 @@
 import Foundation
 
 enum PlatformName: String {
-    case web
-    case mobile          = "mob"
-    case computer        = "pc"
-    case server          = "srv"
-    case application     = "app"
-    case television      = "tv"
-    case console         = "cnsl"
-    case internetOfThing = "iot"
+  case web
+  case mobile          = "mob"
+  case computer        = "pc"
+  case server          = "srv"
+  case application     = "app"
+  case television      = "tv"
+  case console         = "cnsl"
+  case internetOfThing = "iot"
 }

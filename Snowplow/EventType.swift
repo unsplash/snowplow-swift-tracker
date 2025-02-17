@@ -9,9 +9,9 @@
 import Foundation
 
 enum EventType: String {
-    case pageView         = "pv"
-    case structured       = "se"
-    case unstructured     = "ue"
-    case ecommerce        = "tr"
-    case ecommerceItem    = "ti"
+  case pageView         = "pv"
+  case structured       = "se"
+  case unstructured     = "ue"
+  case ecommerce        = "tr"
+  case ecommerceItem    = "ti"
 }
