@@ -44,7 +44,7 @@ public class Tracker {
     values[.viewPort] = SystemInfo.screenResolution
     values[.timezone] = SystemInfo.timezone
     values[.userId] = userId
-    return Payload(values, isBase64Encoded: isBase64Encoded)
+    return Payload(values, base64Encoded: isBase64Encoded)
   }
 
 }
@@ -56,26 +56,24 @@ extension Tracker {
   func track(payload: Payload,
              contexts: [SelfDescribingJSON]? = nil,
              timestamp: TimeInterval? = nil) {
-    var payload = payload
-    payload.merge(payload: trackerPayload)
-
     let eventId = UUID().uuidString.lowercased()
-    payload.set(eventId, forKey: .uuid)
-
+    let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
     let allContexts = finalContexts(with: contexts, eventId: eventId)
-    let data = allContexts
-    let context = SelfDescribingJSON(schema: .contexts, data: data)
+    let context = SelfDescribingJSON(schema: .contexts, data: allContexts)
+    let mergedPayloads = payload.merged(with: trackerPayload)
+
+    var finalContent: [PropertyKey: Codable] = mergedPayloads.content
+    finalContent[.deviceTimestamp] = String(describing: timestamp)
+    finalContent[.uuid] = eventId
 
     if isBase64Encoded, let contextValue = context.base64EncodedRepresentation {
-      payload.set(contextValue, forKey: .contextEncoded)
+      finalContent[.contextEncoded] = contextValue
     } else {
-      payload.set(context, forKey: .context)
+      finalContent[.context] = context
     }
 
-    let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
-    payload.set(String.init(describing: timestamp), forKey: .deviceTimestamp)
-
-    emitter.input(payload)
+    let finalPayload = Payload(finalContent, base64Encoded: isBase64Encoded)
+    emitter.input(finalPayload)
   }
 
   public func trackPageView(uri: String,
@@ -83,11 +81,12 @@ extension Tracker {
                             referrer: String? = nil,
                             contexts: [SelfDescribingJSON]? = nil,
                             timestamp: TimeInterval? = nil) {
-    var payload = Payload(isBase64Encoded: isBase64Encoded)
-    payload.set(EventType.pageView.rawValue, forKey: .event)
-    payload.set(uri, forKey: .url)
-    payload.set(title, forKey: .title)
-    payload.set(referrer, forKey: .referrer)
+    var content: [PropertyKey: Codable] = [:]
+    content[.event] = EventType.pageView.rawValue
+    content[.url] = uri
+    content[.title] = title
+    content[.referrer] = referrer
+    let payload = Payload(content, base64Encoded: isBase64Encoded)
     track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
@@ -109,19 +108,14 @@ extension Tracker {
                                value: Double? = nil,
                                contexts: [SelfDescribingJSON]? = nil,
                                timestamp: TimeInterval? = nil) {
-    var payload = Payload(isBase64Encoded: isBase64Encoded)
-    payload.set(EventType.structured.rawValue, forKey: .event)
-    payload.set(category, forKey: .category)
-    payload.set(action, forKey: .action)
-    if let label = label {
-      payload.set(label, forKey: .label)
-    }
-    if let property = property {
-      payload.set(property, forKey: .property)
-    }
-    if let value = value {
-      payload.set(String(describing: value), forKey: .value)
-    }
+    var content: [PropertyKey: Codable] = [:]
+    content[.event] = EventType.structured.rawValue
+    content[.category] = category
+    content[.action] = action
+    content[.label] = label
+    content[.property] = property
+    content[.value] = String(describing: value)
+    let payload = Payload(content, base64Encoded: isBase64Encoded)
     track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
@@ -131,12 +125,12 @@ extension Tracker {
     let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
     guard let eventValue = json.base64EncodedRepresentation else { return }
 
-    var payload = Payload(isBase64Encoded: isBase64Encoded)
-    payload.set(EventType.unstructured.rawValue, forKey: .event)
-
     let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
-    payload.set(eventValue, forKey: eventKey)
 
+    var content: [PropertyKey: Codable] = [:]
+    content[.event] = EventType.unstructured.rawValue
+    content[eventKey] = eventValue
+    let payload = Payload(content, base64Encoded: isBase64Encoded)
     track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 

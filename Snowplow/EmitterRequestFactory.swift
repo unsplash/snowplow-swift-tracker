@@ -51,7 +51,7 @@ struct EmitterRequestFactory {
     return request
   }
   
-  private func urlEncodedParameters(_ parameters: [String: Any]?) -> String {
+  private func urlEncodedParameters(_ parameters: [PropertyKey: Codable]?) -> String {
     var allowedCharacterSet = CharacterSet.alphanumerics
     allowedCharacterSet.insert(charactersIn: ".-_")
     
@@ -63,7 +63,7 @@ struct EmitterRequestFactory {
       } else {
         encodedValue = "\(value)"
       }
-      query = "\(query)\(key)=\(encodedValue)&"
+      query = "\(query)\(key.rawValue)=\(encodedValue)&"
     }
     return query
   }
