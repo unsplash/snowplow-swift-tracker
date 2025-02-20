@@ -9,20 +9,22 @@
 import Foundation
 import os
 
-public class Emitter {
-  public var payloadFlushFrequency = 10
-  
+public final class Emitter: Sendable {
+  public let payloadFlushFrequency: Int
+
   private let baseURL: String
   private let requestMethod: RequestMethod
-  private lazy var requestFactory: EmitterRequestFactory = .init(baseURL: baseURL)
+  private let requestFactory: EmitterRequestFactory
   private let payloadStorage: PayloadStorage
   
   public init(baseURL: String,
               requestMethod: RequestMethod = .post,
+              payloadFlushFrequency: Int = 10,
               payloadPersistenceEnabled: Bool = true) {
     self.baseURL = baseURL
     self.requestMethod = requestMethod
-    
+    self.requestFactory = .init(baseURL: baseURL)
+    self.payloadFlushFrequency = payloadFlushFrequency
     self.payloadStorage = PayloadStorage(payloadPersistenceEnabled: payloadPersistenceEnabled)
   }
   
@@ -82,10 +84,8 @@ extension Emitter {
 }
 
 public extension Emitter {
-  
-  enum RequestMethod {
+  enum RequestMethod: Sendable {
     case get
     case post
   }
-  
 }

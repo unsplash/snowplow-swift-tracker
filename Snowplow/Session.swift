@@ -94,7 +94,7 @@ public class Session {
   
   // MARK: - Session
   
-  @objc private func resetIfNeeded(_ timer: Timer) {
+  @objc @MainActor private func resetIfNeeded(_ timer: Timer) {
 #if os(macOS)
     let isBackground = !NSApplication.shared.isActive
 #else

@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct EmitterRequestFactory {
+struct EmitterRequestFactory: Sendable {
   let baseURL: String
   var timeoutInterval = 30.0
   

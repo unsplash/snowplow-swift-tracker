@@ -8,11 +8,11 @@
 
 import Foundation
 
-public struct SelfDescribingJSON {
+public struct SelfDescribingJSON: Sendable {
   let schema: SchemaDefinition
-  let data: Codable
+  let data: PayloadContentValue
 
-  public init(schema: SchemaDefinition, data: Codable) {
+  public init(schema: SchemaDefinition, data: PayloadContentValue) {
     self.schema = schema
     self.data = data
   }

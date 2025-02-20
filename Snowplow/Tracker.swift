@@ -8,6 +8,7 @@
 
 import Foundation
 
+@MainActor
 public class Tracker {
 
   public init(applicationId: String,
@@ -62,7 +63,7 @@ extension Tracker {
     let context = SelfDescribingJSON(schema: .contexts, data: allContexts)
     let mergedPayloads = payload.merged(with: trackerPayload)
 
-    var finalContent: [PropertyKey: Codable] = mergedPayloads.content
+    var finalContent: PayloadContent = mergedPayloads.content
     finalContent[.deviceTimestamp] = String(describing: timestamp)
     finalContent[.uuid] = eventId
 
@@ -81,7 +82,7 @@ extension Tracker {
                             referrer: String? = nil,
                             contexts: [SelfDescribingJSON]? = nil,
                             timestamp: TimeInterval? = nil) {
-    var content: [PropertyKey: Codable] = [:]
+    var content: PayloadContent = [:]
     content[.event] = EventType.pageView.rawValue
     content[.url] = uri
     content[.title] = title
@@ -108,7 +109,7 @@ extension Tracker {
                                value: Double? = nil,
                                contexts: [SelfDescribingJSON]? = nil,
                                timestamp: TimeInterval? = nil) {
-    var content: [PropertyKey: Codable] = [:]
+    var content: PayloadContent = [:]
     content[.event] = EventType.structured.rawValue
     content[.category] = category
     content[.action] = action
@@ -127,7 +128,7 @@ extension Tracker {
 
     let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
 
-    var content: [PropertyKey: Codable] = [:]
+    var content: PayloadContent = [:]
     content[.event] = EventType.unstructured.rawValue
     content[eventKey] = eventValue
     let payload = Payload(content, base64Encoded: isBase64Encoded)

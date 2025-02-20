@@ -13,6 +13,7 @@ import AppKit
 import UIKit
 #endif
 
+@MainActor
 struct SystemInfo {
   
   static var timezone: String {

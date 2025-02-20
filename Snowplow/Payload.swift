@@ -9,12 +9,15 @@
 import Foundation
 import os
 
+public typealias PayloadContentValue = Codable & Sendable
+public typealias PayloadContent = [PropertyKey: PayloadContentValue]
+
 public struct Payload: Identifiable, Sendable {
   public let id: String
-  public let content: [PropertyKey: Codable & Sendable]
+  public let content: PayloadContent
   private let isBase64Encoded: Bool
 
-  public init(_ content: [PropertyKey: Codable], base64Encoded: Bool = true) {
+  public init(_ content: PayloadContent, base64Encoded: Bool = true) {
     self.id = UUID().uuidString
     self.isBase64Encoded = base64Encoded
     self.content = content
@@ -52,7 +55,7 @@ extension Payload: Codable {
   public init(from decoder: Decoder) throws {
     let container = try decoder.container(keyedBy: CodingKeys.self)
     let data = try container.decode(Data.self, forKey: .content)
-    guard let decodedContent = try JSONSerialization.jsonObject(with: data, options: []) as? [PropertyKey: Codable] else {
+    guard let decodedContent = try JSONSerialization.jsonObject(with: data, options: []) as? PayloadContent else {
       throw DecodingError.dataCorruptedError(forKey: CodingKeys.content, in: container, debugDescription: "")
     }
     content = decodedContent
