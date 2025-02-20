@@ -7,32 +7,19 @@
 //
 
 import Foundation
+import os.log
 
 @MainActor
 public class Tracker {
-
-  public init(applicationId: String,
-              emitter: Emitter,
-              name: String = "") {
-    self.applicationId = applicationId
-    self.emitter = emitter
-    self.name = name
-    self.isBase64Encoded = true
-    self.session = Session()
-  }
-
-  // MARK: - Properties
-
   public var userId: String?
 
-  // MARK: - Private properties
-
-  private let trackerVersion = "1.0"
   private let applicationId: String
-  private let name: String
-  private let isBase64Encoded: Bool
   private let emitter: Emitter
+  private let isBase64Encoded: Bool
+  private let logger: Logger = .init(subsystem: "SnowplowSwiftTracker", category: "Tracker")
+  private let name: String
   private let session: Session
+  private let trackerVersion = "1.0"
 
   private var trackerPayload: Payload {
     var values = [PropertyKey: String]()
@@ -48,12 +35,22 @@ public class Tracker {
     return Payload(values, base64Encoded: isBase64Encoded)
   }
 
+  public init(applicationId: String,
+              emitter: Emitter,
+              name: String = "") {
+    self.applicationId = applicationId
+    self.emitter = emitter
+    self.name = name
+    self.isBase64Encoded = true
+    self.session = Session()
+
+    logger.info("Tracker initialized.")
+  }
 }
 
 // MARK: - Tracking
 
 extension Tracker {
-
   func track(payload: Payload,
              contexts: [SelfDescribingJSON]? = nil,
              timestamp: TimeInterval? = nil) async {
@@ -82,6 +79,7 @@ extension Tracker {
                             referrer: String? = nil,
                             contexts: [SelfDescribingJSON]? = nil,
                             timestamp: TimeInterval? = nil) async {
+    logger.debug("Tracking page view: \(uri).")
     var content: PayloadContent = [:]
     content[.event] = EventType.pageView.rawValue
     content[.url] = uri
@@ -93,6 +91,7 @@ extension Tracker {
 
   public func trackScreenView(name: String,
                               identifier: String? = nil) async {
+    logger.debug("Tracking screen view: \(name).")
     var data: [PropertyKey: String] = [.name: name]
     if let identifier = identifier {
       data[.identifier] = identifier
@@ -109,6 +108,7 @@ extension Tracker {
                                value: Double? = nil,
                                contexts: [SelfDescribingJSON]? = nil,
                                timestamp: TimeInterval? = nil) async {
+    logger.debug("Tracking event: \(category) - \(action).")
     var content: PayloadContent = [:]
     content[.event] = EventType.structured.rawValue
     content[.category] = category
@@ -134,19 +134,16 @@ extension Tracker {
     let payload = Payload(content, base64Encoded: isBase64Encoded)
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
-
 }
 
 // MARK: - Context
 
 extension Tracker {
-
   private func finalContexts(with contexts: [SelfDescribingJSON]?, eventId: String) -> [SelfDescribingJSON] {
-    var allContexts = contexts ?? [SelfDescribingJSON]()
+    var allContexts: [SelfDescribingJSON] = contexts ?? .init()
 
     let sessionContext = session.sessionContext(with: eventId)
     allContexts.append(sessionContext)
-
     allContexts.append(platformContext)
 
     return allContexts
@@ -165,5 +162,4 @@ extension Tracker {
     return SelfDescribingJSON(schema: .platformMobile, data: data)
 #endif
   }
-
 }
