@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import OSLog
+import os.log
 
 #if os(macOS)
 import AppKit
@@ -16,9 +16,6 @@ import UIKit
 #endif
 
 public class Session {
-  
-  // MARK: - Public properties
-  
   var foregroundTimeout: TimeInterval = 600
   var backgroundTimeout: TimeInterval = 300
   var interval: TimeInterval = 15 {
@@ -27,15 +24,14 @@ public class Session {
       startTracking()
     }
   }
-  
-  // MARK: - Private properties
-  
-  private var sessionInfo: SessionInfo
-  private var timer: Timer?
+
+  private let logger: Logger = .init(subsystem: "SnowplowSwiftTracker", category: "Session")
   private var lastAccessTime: TimeInterval
+  private var sessionInfo: SessionInfo
   private let sessionFilename: String = "SnowplowSession.json"
   private var sessionFileURL: URL?
-  
+  private var timer: Timer?
+
   // MARK: - Initialization
   
   init(info: SessionInfo? = nil) {
@@ -52,7 +48,7 @@ public class Session {
         
         initialSessionInfo = SessionInfo(from: url)
       } catch {
-        os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
+        logger.debug("Failed to load the previous session file: \(error).")
       }
     }
     
@@ -70,7 +66,9 @@ public class Session {
     NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willResignActiveNotification, object: nil)
     NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willTerminateNotification, object: nil)
 #endif
-    
+
+    logger.info("Session created.")
+
     startTracking()
   }
   
@@ -85,11 +83,15 @@ public class Session {
                                  selector: #selector(resetIfNeeded),
                                  userInfo: nil,
                                  repeats: true)
+
+    logger.info("Session tracking started.")
   }
   
   func stopTracking() {
+    guard timer != nil else { return }
     timer?.invalidate()
     timer = nil
+    logger.info("Session tracking stopped.")
   }
   
   // MARK: - Session
@@ -116,6 +118,7 @@ public class Session {
     sessionInfo.update()
     update()
     saveSession()
+    logger.info("Session reset.")
   }
   
   // MARK: - Info
@@ -141,21 +144,15 @@ public class Session {
 extension Session {
   
   @objc private func saveSession() {
-    guard let sessionFileURL else { return }
-    
+    guard let sessionFileURL else {
+      logger.error("Cannot save sessions: no session file URL.")
+      return
+    }
+
     var savedSessionInfo = sessionInfo
     savedSessionInfo.previousId = nil
     savedSessionInfo.write(to: sessionFileURL)
-    
-    NotificationCenter.default.post(name: Snowplow.Session.didSaveNotification, object: savedSessionInfo)
+
+    logger.info("Session saved.")
   }
-  
-}
-
-// MARK: - Notifications
-
-public extension Session {
-  
-  static let didSaveNotification = Notification.Name(rawValue: "Snowplow.SessionDidSave")
-  
 }
