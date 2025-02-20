@@ -56,7 +56,7 @@ extension Tracker {
 
   func track(payload: Payload,
              contexts: [SelfDescribingJSON]? = nil,
-             timestamp: TimeInterval? = nil) {
+             timestamp: TimeInterval? = nil) async {
     let eventId = UUID().uuidString.lowercased()
     let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
     let allContexts = finalContexts(with: contexts, eventId: eventId)
@@ -74,32 +74,32 @@ extension Tracker {
     }
 
     let finalPayload = Payload(finalContent, base64Encoded: isBase64Encoded)
-    emitter.input(finalPayload)
+    await emitter.input(finalPayload)
   }
 
   public func trackPageView(uri: String,
                             title: String? = nil,
                             referrer: String? = nil,
                             contexts: [SelfDescribingJSON]? = nil,
-                            timestamp: TimeInterval? = nil) {
+                            timestamp: TimeInterval? = nil) async {
     var content: PayloadContent = [:]
     content[.event] = EventType.pageView.rawValue
     content[.url] = uri
     content[.title] = title
     content[.referrer] = referrer
     let payload = Payload(content, base64Encoded: isBase64Encoded)
-    track(payload: payload, contexts: contexts, timestamp: timestamp)
+    await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
   public func trackScreenView(name: String,
-                              identifier: String? = nil) {
+                              identifier: String? = nil) async {
     var data: [PropertyKey: String] = [.name: name]
     if let identifier = identifier {
       data[.identifier] = identifier
     }
     let json = SelfDescribingJSON(schema: .screenView, data: data)
     let payload = Payload(json, base64Encoded: isBase64Encoded)
-    trackUnstructEvent(event: payload)
+    await trackUnstructEvent(event: payload)
   }
 
   public func trackStructEvent(category: String,
@@ -108,7 +108,7 @@ extension Tracker {
                                property: String? = nil,
                                value: Double? = nil,
                                contexts: [SelfDescribingJSON]? = nil,
-                               timestamp: TimeInterval? = nil) {
+                               timestamp: TimeInterval? = nil) async {
     var content: PayloadContent = [:]
     content[.event] = EventType.structured.rawValue
     content[.category] = category
@@ -117,12 +117,12 @@ extension Tracker {
     content[.property] = property
     content[.value] = String(describing: value)
     let payload = Payload(content, base64Encoded: isBase64Encoded)
-    track(payload: payload, contexts: contexts, timestamp: timestamp)
+    await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
   public func trackUnstructEvent(event: Payload,
                                  contexts: [SelfDescribingJSON]? = nil,
-                                 timestamp: TimeInterval? = nil) {
+                                 timestamp: TimeInterval? = nil) async {
     let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
     guard let eventValue = json.base64EncodedRepresentation else { return }
 
@@ -132,7 +132,7 @@ extension Tracker {
     content[.event] = EventType.unstructured.rawValue
     content[eventKey] = eventValue
     let payload = Payload(content, base64Encoded: isBase64Encoded)
-    track(payload: payload, contexts: contexts, timestamp: timestamp)
+    await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
 }

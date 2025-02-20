@@ -9,7 +9,7 @@
 import Foundation
 import os
 
-public final class Emitter: Sendable {
+public actor Emitter: Sendable {
   public let payloadFlushFrequency: Int
 
   private let baseURL: String
@@ -28,11 +28,9 @@ public final class Emitter: Sendable {
     self.payloadStorage = PayloadStorage(payloadPersistenceEnabled: payloadPersistenceEnabled)
   }
   
-  func input(_ payload: Payload) {
-    Task {
-      await payloadStorage.append(payload)
-      await flushIfNeeded()
-    }
+  func input(_ payload: Payload) async {
+    await payloadStorage.append(payload)
+    await flushIfNeeded()
   }
 }
 
