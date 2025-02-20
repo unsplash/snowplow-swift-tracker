@@ -25,7 +25,7 @@ public actor Emitter: Sendable {
     self.requestMethod = requestMethod
     self.requestFactory = .init(baseURL: baseURL)
     self.payloadFlushFrequency = payloadFlushFrequency
-    self.payloadStorage = PayloadStorage(payloadPersistenceEnabled: payloadPersistenceEnabled)
+    self.payloadStorage = PayloadStorage(persistenceEnabled: payloadPersistenceEnabled)
   }
   
   func input(_ payload: Payload) async {
