@@ -1,14 +1,12 @@
 import Foundation
-import os
 
 public struct SessionInfo: Codable {
-  
   var userId: String
   var currentId: String
   var previousId: String?
   var index: Int
   var storage = "SQLITE"
-  
+
   init(userId: String, currentId: String, previousId: String?, index: Int) {
     self.userId = userId
     self.currentId = currentId
@@ -26,18 +24,14 @@ public struct SessionInfo: Codable {
     index = sessionInfo.index
   }
   
-  func write(to url: URL) {
-    do {
-      let folderURL = url.deletingLastPathComponent()
-      if FileManager.default.fileExists(atPath: folderURL.path) == false {
-        try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
-      }
-      
-      let sessionData = try JSONEncoder().encode(self)
-      try sessionData.write(to: url, options: .atomic)
-    } catch {
-      os_log("%@", log: OSLog.default, type: OSLogType.error, error.localizedDescription)
+  func write(to url: URL) throws {
+    let folderURL = url.deletingLastPathComponent()
+    if FileManager.default.fileExists(atPath: folderURL.path) == false {
+      try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
     }
+
+    let sessionData = try JSONEncoder().encode(self)
+    try sessionData.write(to: url, options: .atomic)
   }
   
   mutating func update() {

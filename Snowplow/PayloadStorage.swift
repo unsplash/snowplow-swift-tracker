@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import OSLog
 
 actor PayloadStorage {
   var payloadCount: Int { payloads.count }

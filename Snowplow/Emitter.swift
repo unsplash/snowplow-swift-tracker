@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import OSLog
 
 public actor Emitter {
   public let payloadFlushFrequency: Int

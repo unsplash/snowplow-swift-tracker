@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import OSLog
 
 #if os(macOS)
 import AppKit
@@ -139,10 +139,14 @@ extension Session {
       return
     }
 
-    var savedSessionInfo = sessionInfo
-    savedSessionInfo.previousId = nil
-    savedSessionInfo.write(to: sessionFileURL)
+    do {
+      var savedSessionInfo = sessionInfo
+      savedSessionInfo.previousId = nil
+      try savedSessionInfo.write(to: sessionFileURL)
 
-    logger.info("Session saved.")
+      logger.info("Session saved.")
+    } catch {
+      logger.error("Failed to save session: \(error)")
+    }
   }
 }

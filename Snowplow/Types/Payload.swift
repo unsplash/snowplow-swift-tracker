@@ -1,5 +1,4 @@
 import Foundation
-import os
 
 public struct Payload: Identifiable, Sendable {
   public let id: String
