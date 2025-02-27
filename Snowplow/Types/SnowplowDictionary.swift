@@ -1,10 +1,3 @@
-//
-//  SnowplowDictionary.swift
-//  Snowplow
-//
-//  Created by Olivier Collet on 2025-02-26.
-//
-
 import Foundation
 
 public typealias SnowplowDictionary = [PropertyKey: Sendable]

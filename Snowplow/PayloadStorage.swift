@@ -1,11 +1,3 @@
-//
-//  PayloadStorage.swift
-//  Snowplow
-//
-//  Created by Olivier Collet on 2023-07-17.
-//  Copyright © 2023 Unsplash. All rights reserved.
-//
-
 import Foundation
 import os.log
 

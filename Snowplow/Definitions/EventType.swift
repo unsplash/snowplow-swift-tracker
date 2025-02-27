@@ -1,11 +1,3 @@
-//
-//  EventType.swift
-//  Snowplow
-//
-//  Created by Olivier Collet on 2018-06-08.
-//  Copyright © 2018 Unsplash. All rights reserved.
-//
-
 import Foundation
 
 enum EventType: String, Codable {

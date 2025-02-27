@@ -1,11 +1,3 @@
-//
-//  Payload.swift
-//  Snowplow
-//
-//  Created by Olivier Collet on 2018-04-05.
-//  Copyright © 2018 Unsplash. All rights reserved.
-//
-
 import Foundation
 import os
 

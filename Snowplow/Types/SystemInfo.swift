@@ -1,11 +1,3 @@
-//
-//  SystemInfo.swift
-//  Snowplow
-//
-//  Created by Olivier Collet on 2018-06-18.
-//  Copyright © 2018 Unsplash. All rights reserved.
-//
-
 import Foundation
 #if os(macOS)
 import AppKit

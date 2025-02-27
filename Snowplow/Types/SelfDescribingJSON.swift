@@ -1,11 +1,3 @@
-//
-//  SelfDescribingJSON.swift
-//  Snowplow
-//
-//  Created by Olivier Collet on 2018-04-07.
-//  Copyright © 2018 Unsplash. All rights reserved.
-//
-
 import Foundation
 
 public struct SelfDescribingJSON {
