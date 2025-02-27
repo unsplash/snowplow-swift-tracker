@@ -22,17 +22,17 @@ public class Tracker {
   private let trackerVersion = "1.0"
 
   private var trackerPayload: Payload {
-    var values = [PropertyKey: String]()
-    values[.trackerVersion] = trackerVersion
-    values[.appId] = applicationId
-    values[.namespace] = name
-    values[.platform] = SystemInfo.platform
-    values[.language] = SystemInfo.language
-    values[.resolution] = SystemInfo.screenResolution
-    values[.viewPort] = SystemInfo.screenResolution
-    values[.timezone] = SystemInfo.timezone
-    values[.userId] = userId
-    return Payload(values, base64Encoded: isBase64Encoded)
+    var content = [PropertyKey: String]()
+    content[.trackerVersion] = trackerVersion
+    content[.appId] = applicationId
+    content[.namespace] = name
+    content[.platform] = SystemInfo.platform
+    content[.language] = SystemInfo.language
+    content[.resolution] = SystemInfo.screenResolution
+    content[.viewPort] = SystemInfo.screenResolution
+    content[.timezone] = SystemInfo.timezone
+    content[.userId] = userId
+    return Payload(content, base64Encoded: isBase64Encoded)
   }
 
   public init(applicationId: String,
@@ -56,20 +56,27 @@ extension Tracker {
              timestamp: TimeInterval? = nil) async {
     let eventId = UUID().uuidString.lowercased()
     let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
-    let allContexts = finalContexts(with: contexts, eventId: eventId)
-    let context = SelfDescribingJSON(schema: .contexts, data: allContexts)
-    let mergedPayloads = payload.merged(with: trackerPayload)
+    let sessionContext = session.sessionContext(with: eventId)
 
-    var finalContent: PayloadContent = mergedPayloads.content
+    let allContexts: [SelfDescribingJSON] = (contexts ?? .init()) + [
+      sessionContext,
+      platformContext
+    ]
+
+    let allContextsDictionary = SelfDescribingJSON.dictionaryRepresentation(schema: .contexts, data: allContexts.map { $0.dictionaryRepresentation })
+
+    let mergedPayloads = payload.merged(with: trackerPayload)
+    
+    var finalContent: SnowplowDictionary = mergedPayloads.content
     finalContent[.deviceTimestamp] = String(describing: timestamp)
     finalContent[.uuid] = eventId
-
-    if isBase64Encoded, let contextValue = context.base64EncodedRepresentation {
+    
+    if isBase64Encoded, let contextValue = allContextsDictionary.base64EncodedRepresentation {
       finalContent[.contextEncoded] = contextValue
     } else {
-      finalContent[.context] = context
+      finalContent[.context] = allContextsDictionary
     }
-
+    
     let finalPayload = Payload(finalContent, base64Encoded: isBase64Encoded)
     await emitter.input(finalPayload)
   }
@@ -80,7 +87,7 @@ extension Tracker {
                             contexts: [SelfDescribingJSON]? = nil,
                             timestamp: TimeInterval? = nil) async {
     logger.debug("Tracking page view: \(uri).")
-    var content: PayloadContent = [:]
+    var content: SnowplowDictionary = [:]
     content[.event] = EventType.pageView.rawValue
     content[.url] = uri
     content[.title] = title
@@ -92,11 +99,11 @@ extension Tracker {
   public func trackScreenView(name: String,
                               identifier: String? = nil) async {
     logger.debug("Tracking screen view: \(name).")
-    var data: [PropertyKey: String] = [.name: name]
+    var data: SnowplowDictionary = [.name: name]
     if let identifier = identifier {
       data[.identifier] = identifier
     }
-    let json = SelfDescribingJSON(schema: .screenView, data: data)
+    let json = SelfDescribingJSON(schema: .screenView, dictionary: data)
     let payload = Payload(json, base64Encoded: isBase64Encoded)
     await trackUnstructEvent(event: payload)
   }
@@ -109,7 +116,7 @@ extension Tracker {
                                contexts: [SelfDescribingJSON]? = nil,
                                timestamp: TimeInterval? = nil) async {
     logger.debug("Tracking event: \(category) - \(action).")
-    var content: PayloadContent = [:]
+    var content: SnowplowDictionary = [:]
     content[.event] = EventType.structured.rawValue
     content[.category] = category
     content[.action] = action
@@ -123,12 +130,15 @@ extension Tracker {
   public func trackUnstructEvent(event: Payload,
                                  contexts: [SelfDescribingJSON]? = nil,
                                  timestamp: TimeInterval? = nil) async {
-    let json = SelfDescribingJSON(schema: .unstructedEvent, data: event)
-    guard let eventValue = json.base64EncodedRepresentation else { return }
+    let json = SelfDescribingJSON(schema: .unstructedEvent, payload: event)
+    guard let eventValue = json.base64EncodedRepresentation else {
+      logger.error("Failed to encode the data.")
+      return
+    }
 
     let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
 
-    var content: PayloadContent = [:]
+    var content: SnowplowDictionary = [:]
     content[.event] = EventType.unstructured.rawValue
     content[eventKey] = eventValue
     let payload = Payload(content, base64Encoded: isBase64Encoded)
@@ -139,27 +149,17 @@ extension Tracker {
 // MARK: - Context
 
 extension Tracker {
-  private func finalContexts(with contexts: [SelfDescribingJSON]?, eventId: String) -> [SelfDescribingJSON] {
-    var allContexts: [SelfDescribingJSON] = contexts ?? .init()
-
-    let sessionContext = session.sessionContext(with: eventId)
-    allContexts.append(sessionContext)
-    allContexts.append(platformContext)
-
-    return allContexts
-  }
-
   private var platformContext: SelfDescribingJSON {
-    let data: [PropertyKey: String] = [
+    let data: SnowplowDictionary = [
       .platformOSType: SystemInfo.osType,
       .platformOSVersion: SystemInfo.osVersion,
       .platformDeviceManufacturer: SystemInfo.deviceVendor,
       .platformDeviceModel: SystemInfo.deviceModel
     ]
 #if os(macOS)
-    return SelfDescribingJSON(schema: .platformDesktop, data: data)
+    return SelfDescribingJSON(schema: .platformDesktop, dictionary: data)
 #else
-    return SelfDescribingJSON(schema: .platformMobile, data: data)
+    return SelfDescribingJSON(schema: .platformMobile, dictionary: data)
 #endif
   }
 }

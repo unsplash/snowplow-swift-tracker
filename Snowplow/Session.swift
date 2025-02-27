@@ -124,17 +124,15 @@ public class Session {
   // MARK: - Info
   
   func sessionContext(with eventId: String) -> SelfDescribingJSON {
-    var data: [PropertyKey: String] = [
+    let data: SnowplowDictionary = [
       .sessionContextUserId: sessionInfo.userId,
       .sessionContextSessionId: sessionInfo.currentId,
-      .sessionContextSessionIndex: String(sessionInfo.index),
+      .sessionContextPreviousSessionId: sessionInfo.previousId ?? NSNull(),
+      .sessionContextSessionIndex: sessionInfo.index,
       .sessionContextFirstEventId: eventId,
       .sessionContextStorageMechanism: sessionInfo.storage
     ]
-
-    data[.sessionContextPreviousSessionId] = sessionInfo.previousId
-
-    return SelfDescribingJSON(schema: .session, data: data)
+    return SelfDescribingJSON(schema: .session, dictionary: data)
   }
   
 }

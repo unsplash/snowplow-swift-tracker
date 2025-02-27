@@ -37,7 +37,9 @@ actor PayloadStorage {
       }
 
       let encodedPayloads = try Data(contentsOf: url)
-      let storedPayloads = try JSONDecoder().decode([Payload].self, from: encodedPayloads)
+      guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [Payload] else {
+        throw PayloadStorageError.cannotDecodeStoredData
+      }
       payloads = storedPayloads
       logger.debug("Persistent file loaded with \(storedPayloads.count) payloads.")
       logger.info("Persistent storage initialized with a file.")
@@ -65,7 +67,7 @@ actor PayloadStorage {
         logger.debug("Persistent file created.")
       }
       
-      let encodedPayloads = try JSONEncoder().encode(payloads)
+      let encodedPayloads = try JSONSerialization.data(withJSONObject: payloads)
       logger.debug("Saving \(encodedPayloads.count) payloads.")
       try encodedPayloads.write(to: persistenceFileURL, options: .atomic)
       logger.info("Payloads saved.")
@@ -88,4 +90,8 @@ actor PayloadStorage {
     }
     save()
   }
+}
+
+public enum PayloadStorageError: Error {
+  case cannotDecodeStoredData
 }

@@ -20,8 +20,8 @@ struct EmitterRequestFactory: Sendable {
     guard var components = URLComponents(url: endpointURL, resolvingAgainstBaseURL: true) else {
       throw URLError(.badURL)
     }
-    components.query = urlEncodedParameters(payload.content)
-    
+    components.queryItems = payload.content.queryItems
+
     guard let url = components.url else {
       throw URLError(.badURL)
     }
@@ -39,32 +39,15 @@ struct EmitterRequestFactory: Sendable {
       throw URLError(.badURL)
     }
 
-    let finalJSONPayload = SelfDescribingJSON(schema: .payloadData, data: payloads)
+    let finalJSONPayload = SelfDescribingJSON.dictionaryRepresentation(schema: .payloadData, data: payloads.map { $0.content.dictionaryRepresentation })
 
     var request: URLRequest = .init(url: endpointURL,
                                     cachePolicy: .reloadIgnoringLocalAndRemoteCacheData,
                                     timeoutInterval: timeoutInterval)
     request.httpMethod = "POST"
     request.allHTTPHeaderFields = ["content-type": "application/json; charset=utf-8"]
-    request.httpBody = try JSONEncoder().encode(finalJSONPayload)
+    request.httpBody = try JSONSerialization.data(withJSONObject: finalJSONPayload)
 
     return request
-  }
-  
-  private func urlEncodedParameters(_ parameters: [PropertyKey: Codable]?) -> String {
-    var allowedCharacterSet = CharacterSet.alphanumerics
-    allowedCharacterSet.insert(charactersIn: ".-_")
-    
-    var query = ""
-    parameters?.forEach { key, value in
-      let encodedValue: String
-      if let value = value as? String {
-        encodedValue = value.addingPercentEncoding(withAllowedCharacters: allowedCharacterSet) ?? ""
-      } else {
-        encodedValue = "\(value)"
-      }
-      query = "\(query)\(key.rawValue)=\(encodedValue)&"
-    }
-    return query
   }
 }

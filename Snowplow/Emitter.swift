@@ -9,7 +9,7 @@
 import Foundation
 import os.log
 
-public actor Emitter: Sendable {
+public actor Emitter {
   public let payloadFlushFrequency: Int
 
   private let baseURL: String
@@ -55,7 +55,7 @@ extension Emitter {
       logger.error("Failed to flush payloads: \(error).")
     }
   }
-  
+
   private func flush() async throws {
     switch requestMethod {
     case .get:
