@@ -58,17 +58,17 @@ extension Tracker {
     let allContextsDictionary = SelfDescribingJSON.dictionaryRepresentation(schema: .contexts, data: allContexts.map { $0.dictionaryRepresentation })
 
     let mergedPayloads = payload.merged(with: trackerPayload)
-    
+
     var finalContent: SnowplowDictionary = mergedPayloads.content
     finalContent[.deviceTimestamp] = String(describing: timestamp)
     finalContent[.uuid] = eventId
-    
+
     if isBase64Encoded, let contextValue = allContextsDictionary.base64EncodedRepresentation {
       finalContent[.contextEncoded] = contextValue
     } else {
       finalContent[.context] = allContextsDictionary
     }
-    
+
     let finalPayload = Payload(finalContent, base64Encoded: isBase64Encoded)
     await emitter.input(finalPayload)
   }
@@ -119,10 +119,10 @@ extension Tracker {
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
-  public func trackUnstructEvent(event: Payload,
-                                 contexts: [SelfDescribingJSON]? = nil,
-                                 timestamp: TimeInterval? = nil) async {
-    let json = SelfDescribingJSON(schema: .unstructedEvent, payload: event)
+  func trackUnstructEvent(event: Payload,
+                          contexts: [SelfDescribingJSON]? = nil,
+                          timestamp: TimeInterval? = nil) async {
+    let json = SelfDescribingJSON(schema: .unstructEvent, payload: event)
     guard let eventValue = json.base64EncodedRepresentation else {
       logger.error("Failed to encode the data.")
       return
