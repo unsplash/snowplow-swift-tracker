@@ -114,7 +114,9 @@ extension Tracker {
     content[.action] = action
     content[.label] = label
     content[.property] = property
-    content[.value] = String(describing: value)
+    if let value {
+      content[.value] = String(describing: value)
+    }
     let payload = Payload(content, base64Encoded: isBase64Encoded)
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
