@@ -18,6 +18,24 @@ public struct SelfDescribingJSON {
     self.schema = schema
     self.data = dictionary.dictionaryRepresentation
   }
+
+  public init?(data: Data) {
+    guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+      return nil
+    }
+
+    guard let schemaValue = dictionary["schema"] as? String,
+          let decodedSchema = SchemaDefinition(rawValue: schemaValue) else {
+      return nil
+    }
+
+    guard let decodedData = dictionary["data"] as? [String: Sendable] else {
+      return nil
+    }
+
+    self.schema = decodedSchema
+    self.data = decodedData
+  }
 }
 
 extension SelfDescribingJSON {
