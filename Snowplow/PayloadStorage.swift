@@ -29,10 +29,10 @@ actor PayloadStorage {
       }
 
       let encodedPayloads = try Data(contentsOf: url)
-      guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [Payload] else {
+      guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [[String: Sendable]] else {
         throw PayloadStorageError.cannotDecodeStoredData
       }
-      payloads = storedPayloads
+      payloads = storedPayloads.compactMap { Payload(dictionary: $0) }
       logger.debug("Persistent file loaded with \(storedPayloads.count) payloads.")
       logger.info("Persistent storage initialized with a file.")
     } catch {
@@ -59,7 +59,7 @@ actor PayloadStorage {
         logger.debug("Persistent file created.")
       }
       
-      let encodedPayloads = try JSONSerialization.data(withJSONObject: payloads)
+      let encodedPayloads = try JSONSerialization.data(withJSONObject: payloads.compactMap { $0.dictionaryRepresentation })
       logger.debug("Saving \(encodedPayloads.count) payloads.")
       try encodedPayloads.write(to: persistenceFileURL, options: .atomic)
       logger.info("Payloads saved.")
@@ -80,6 +80,12 @@ actor PayloadStorage {
       guard let index = payloads.firstIndex(of: payload) else { return }
       payloads.remove(at: index)
     }
+    save()
+  }
+
+  func removeAll() {
+    logger.debug("Removing \(self.payloadCount) payloads.")
+    payloads.removeAll()
     save()
   }
 }
