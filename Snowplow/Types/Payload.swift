@@ -20,6 +20,33 @@ public struct Payload: Identifiable, Sendable {
     ]
   }
 
+  public init?(dictionary: [String: Sendable]) {
+    guard let id = dictionary["id"] as? String else {
+      return nil
+    }
+
+    guard let contentDictionary = dictionary["content"] as? [String: Sendable],
+          let content = SnowplowDictionary(dictionary: contentDictionary) else {
+      return nil
+    }
+
+    guard let isBase64Encoded = dictionary["isBase64Encoded"] as? Bool else {
+      return nil
+    }
+
+    self.id = id
+    self.content = content
+    self.isBase64Encoded = isBase64Encoded
+  }
+
+  public init?(data: Data) {
+    guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Sendable] else {
+      return nil
+    }
+
+    self.init(dictionary: dictionary)
+  }
+
   public func merged(with payload: Payload) -> Payload {
     var newContent = content
     newContent.merge(payload.content, uniquingKeysWith: { (current, _) in current })
@@ -30,5 +57,15 @@ public struct Payload: Identifiable, Sendable {
 extension Payload: Equatable {
   public static func == (lhs: Payload, rhs: Payload) -> Bool {
     lhs.id == rhs.id
+  }
+}
+
+extension Payload {
+  var dictionaryRepresentation: [String: Any] {
+    [
+      "id": id,
+      "content": content.dictionaryRepresentation,
+      "isBase64Encoded": isBase64Encoded
+    ]
   }
 }

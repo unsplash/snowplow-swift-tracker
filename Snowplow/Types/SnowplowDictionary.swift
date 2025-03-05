@@ -3,6 +3,16 @@ import Foundation
 public typealias SnowplowDictionary = [PropertyKey: Sendable]
 
 public extension SnowplowDictionary {
+  init?(dictionary: [String: Sendable]) {
+    self.init()
+    dictionary.forEach { (key, value) in
+      guard let propertyKey = PropertyKey(rawValue: key) else {
+        return
+      }
+      self[propertyKey] = value
+    }
+  }
+
   var dictionaryRepresentation: [String: Sendable] {
     var dictionary: [String: Sendable] = [:]
     for (key, value) in self {
