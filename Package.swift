@@ -13,6 +13,7 @@ let package = Package(
     .library(name: "Snowplow", targets: ["Snowplow"])
   ],
   targets: [
-    .target(name: "Snowplow", path: "Snowplow")
+    .target(name: "Snowplow", path: "Snowplow"),
+    .testTarget(name: "Tests", dependencies: [.targetItem(name: "Snowplow", condition: nil)])
   ]
 )
