@@ -11,7 +11,7 @@ public class Tracker {
   private let logger: Logger = .init(subsystem: "SnowplowSwiftTracker", category: "Tracker")
   private let name: String
   private let session: Session
-  private let trackerVersion = "1.0"
+  private let trackerVersion = "2.0"
 
   private var trackerPayload: Payload {
     var content = [PropertyKey: String]()
