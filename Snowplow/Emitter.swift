@@ -68,15 +68,10 @@ extension Emitter {
 
       let payloads = await payloadStorage.payloads
 
-      try await withThrowingTaskGroup(of: Void.self) { group in
-        for payload in payloads {
-          group.addTask { [self] in
-            let request = try requestFactory.getRequest(for: payload)
-            _ = try await URLSession.shared.data(for: request)
-            await payloadStorage.remove([payload])
-          }
-          try await group.next()
-        }
+      for payload in payloads {
+        let request = try requestFactory.getRequest(for: payload)
+        _ = try await URLSession.shared.data(for: request)
+        await payloadStorage.remove([payload])
       }
 
     case .post:
