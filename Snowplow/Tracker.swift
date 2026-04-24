@@ -1,7 +1,35 @@
 import Foundation
 import OSLog
 
-public class Tracker {
+public final class Tracker {
+  public struct Configuration: Sendable {
+    public enum RequestMethod: Sendable {
+      case get
+      case post
+    }
+
+    public let applicationId: String
+    public let name: String
+    public let baseURL: String
+    public let requestMethod: RequestMethod
+    public let payloadFlushFrequency: Int
+    public let payloadPersistenceEnabled: Bool
+
+    public init(applicationId: String,
+                name: String = "",
+                baseURL: String,
+                requestMethod: RequestMethod = .post,
+                payloadFlushFrequency: Int = 10,
+                payloadPersistenceEnabled: Bool = true) {
+      self.applicationId = applicationId
+      self.name = name
+      self.baseURL = baseURL
+      self.requestMethod = requestMethod
+      self.payloadFlushFrequency = payloadFlushFrequency
+      self.payloadPersistenceEnabled = payloadPersistenceEnabled
+    }
+  }
+
   public var userId: String? {
     get { userIdValue }
     set { userIdValue = newValue }
@@ -54,12 +82,22 @@ public class Tracker {
   }
 
   @MainActor
-  public init(applicationId: String,
-              emitter: Emitter,
-              name: String = "") {
-    self.applicationId = applicationId
+  public init(configuration: Configuration) {
+    let requestMethod: Emitter.RequestMethod = switch configuration.requestMethod {
+    case .get: .get
+    case .post: .post
+    }
+
+    let emitter = Emitter(
+      baseURL: configuration.baseURL,
+      requestMethod: requestMethod,
+      payloadFlushFrequency: configuration.payloadFlushFrequency,
+      payloadPersistenceEnabled: configuration.payloadPersistenceEnabled
+    )
+
+    self.applicationId = configuration.applicationId
     self.emitter = emitter
-    self.name = name
+    self.name = configuration.name
     self.isBase64Encoded = true
     self.session = Session()
 

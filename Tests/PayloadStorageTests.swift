@@ -14,7 +14,7 @@ struct PayloadStorageTests {
     ]
     let payload = Payload(content, base64Encoded: false)
 
-    let emitter = await Emitter(baseURL: "http://localhost:9090",
+    let emitter = Emitter(baseURL: "http://localhost:9090",
                                 requestMethod: .post,
                                 payloadFlushFrequency: 100,
                                 payloadPersistenceEnabled: false)
@@ -37,13 +37,13 @@ struct PayloadStorageTests {
     ]
     let payload = Payload(content, base64Encoded: false)
 
-    let emitter = await Emitter(baseURL: "http://localhost:9090",
+    let emitter = Emitter(baseURL: "http://localhost:9090",
                                 requestMethod: .post,
                                 payloadFlushFrequency: 100,
                                 payloadPersistenceEnabled: true)
     await emitter.input(payload)
 
-    let newEmitter = await Emitter(baseURL: "http://localhost:9090",
+    let newEmitter = Emitter(baseURL: "http://localhost:9090",
                                    requestMethod: .post,
                                    payloadFlushFrequency: 100,
                                    payloadPersistenceEnabled: true)

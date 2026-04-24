@@ -1,7 +1,7 @@
 import Foundation
 import OSLog
 
-public actor Emitter {
+actor Emitter {
   let payloadFlushFrequency: Int
 
   var storedPayloadCount: Int { payloads.count }
@@ -17,20 +17,59 @@ public actor Emitter {
   private var payloads: [Payload] = []
   private var isFlushing = false
 
-  public init(baseURL: String,
-              requestMethod: RequestMethod = .post,
-              payloadFlushFrequency: Int = 10,
-              payloadPersistenceEnabled: Bool = true) async {
+  init(baseURL: String,
+       requestMethod: RequestMethod = .post,
+       payloadFlushFrequency: Int = 10,
+       payloadPersistenceEnabled: Bool = true) {
     self.baseURL = baseURL
     self.requestFactory = .init(baseURL: baseURL)
     self.requestMethod = requestMethod
     self.payloadFlushFrequency = payloadFlushFrequency
     self.isPersistenceEnabled = payloadPersistenceEnabled
 
-    initializePersistentStorage()
+    let isEmitterLoggerEnabled = Tracker.isLoggerEnabled(for: .emitter)
+    defer {
+      if isEmitterLoggerEnabled {
+        logger.info("❄️ Emitter initialized.")
+      }
+    }
 
-    if Tracker.isLoggerEnabled(for: .emitter) {
-      logger.info("❄️ Emitter initialized.")
+    guard isPersistenceEnabled else {
+      if isEmitterLoggerEnabled {
+        logger.info("❄️ Persistent storage initialized with persistent disabled.")
+      }
+      return
+    }
+
+    do {
+      let bundleId: String = Bundle.main.bundleIdentifier ?? ""
+      var url = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+      url.appendPathComponent("Snowplow/\(bundleId)/\(cacheFilename)")
+      persistenceFileURL = url
+
+      guard FileManager().fileExists(atPath: url.path) else {
+        if isEmitterLoggerEnabled {
+          logger.info("❄️ Persistent storage initialized without a file.")
+        }
+        return
+      }
+
+      let encodedPayloads = try Data(contentsOf: url)
+      guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [[String: Sendable]] else {
+        throw PayloadStorageError.cannotDecodeStoredData
+      }
+
+      let decodedPayloads = storedPayloads.compactMap { Payload(dictionary: $0) }
+      payloads = decodedPayloads
+
+      if isEmitterLoggerEnabled {
+        logger.debug("❄️ Persistent file loaded with \(decodedPayloads.count) payloads.")
+        logger.info("❄️ Persistent storage initialized with a file.")
+      }
+    } catch {
+      if isEmitterLoggerEnabled {
+        logger.error("❄️ Failed to initialize the persistent file: \(error)")
+      }
     }
   }
 
@@ -52,45 +91,6 @@ public actor Emitter {
 // MARK: - Storage
 
 extension Emitter {
-  private func initializePersistentStorage() {
-    guard isPersistenceEnabled else {
-      if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.info("❄️ Persistent storage initialized with persistent disabled.")
-      }
-      return
-    }
-
-    do {
-      let bundleId: String = Bundle.main.bundleIdentifier ?? ""
-      var url = try FileManager.default.url(for: .applicationSupportDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
-      url.appendPathComponent("Snowplow/\(bundleId)/\(cacheFilename)")
-      persistenceFileURL = url
-
-      guard FileManager().fileExists(atPath: url.path) else {
-        if Tracker.isLoggerEnabled(for: .emitter) {
-          logger.info("❄️ Persistent storage initialized without a file.")
-        }
-        return
-      }
-
-      let encodedPayloads = try Data(contentsOf: url)
-      guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [[String: Sendable]] else {
-        throw PayloadStorageError.cannotDecodeStoredData
-      }
-
-      payloads = storedPayloads.compactMap { Payload(dictionary: $0) }
-
-      if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.debug("❄️ Persistent file loaded with \(self.payloads.count) payloads.")
-        logger.info("❄️ Persistent storage initialized with a file.")
-      }
-    } catch {
-      if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.error("❄️ Failed to initialize the persistent file: \(error)")
-      }
-    }
-  }
-
   private func save() {
     guard isPersistenceEnabled else {
       if Tracker.isLoggerEnabled(for: .emitter) {
@@ -231,13 +231,13 @@ extension Emitter {
   }
 }
 
-public extension Emitter {
+extension Emitter {
   enum RequestMethod: Sendable {
     case get
     case post
   }
 }
 
-public enum PayloadStorageError: Error {
+enum PayloadStorageError: Error {
   case cannotDecodeStoredData
 }
