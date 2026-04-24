@@ -15,6 +15,7 @@ public actor Emitter {
   private let isPersistenceEnabled: Bool
   private var persistenceFileURL: URL?
   private var payloads: [Payload] = []
+  private var isFlushing = false
 
   public init(baseURL: String,
               requestMethod: RequestMethod = .post,
@@ -165,25 +166,37 @@ extension Emitter {
 
 extension Emitter {
   private func needsFlush() -> Bool {
-    requestMethod == .get || payloads.count >= payloadFlushFrequency
+    switch requestMethod {
+    case .get:
+      return payloads.isEmpty == false
+    case .post:
+      return payloads.count >= payloadFlushFrequency
+    }
   }
 
   private func flushIfNeeded() async {
+    guard isFlushing == false  else { return }
     guard needsFlush() else { return }
 
-    do {
-      if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.info("❄️ Flushing payloads.")
-      }
+    isFlushing = true
+    defer { isFlushing = false }
 
-      try await flush()
+    while needsFlush() {
+      do {
+        if Tracker.isLoggerEnabled(for: .emitter) {
+          logger.info("❄️ Flushing payloads.")
+        }
 
-      if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.info("❄️ Payloads flushed.")
-      }
-    } catch {
-      if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.error("❄️ Failed to flush payloads: \(error).")
+        try await flush()
+
+        if Tracker.isLoggerEnabled(for: .emitter) {
+          logger.info("❄️ Payloads flushed.")
+        }
+      } catch {
+        if Tracker.isLoggerEnabled(for: .emitter) {
+          logger.error("❄️ Failed to flush payloads: \(error).")
+        }
+        return
       }
     }
   }
@@ -195,7 +208,8 @@ extension Emitter {
         logger.debug("❄️ Flushing payloads using the GET method.")
       }
 
-      for payload in payloads {
+      let payloadsToSend = payloads
+      for payload in payloadsToSend {
         let request = try requestFactory.getRequest(for: payload)
         _ = try await URLSession.shared.data(for: request)
         removePayloads([payload])
@@ -206,10 +220,13 @@ extension Emitter {
         logger.debug("❄️ Flushing payloads using the POST method.")
       }
 
-      let request = try requestFactory.postRequest(for: payloads)
+      let payloadsToSend = payloads
+      guard payloadsToSend.isEmpty == false else { return }
+
+      let request = try requestFactory.postRequest(for: payloadsToSend)
 
       _ = try await URLSession.shared.data(for: request)
-      removePayloads(payloads)
+      removePayloads(payloadsToSend)
     }
   }
 }
