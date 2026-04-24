@@ -7,6 +7,7 @@ import AppKit
 import UIKit
 #endif
 
+@MainActor
 public class Session {
   var foregroundTimeout: TimeInterval = 600
   var backgroundTimeout: TimeInterval = 300
@@ -40,7 +41,9 @@ public class Session {
         
         initialSessionInfo = SessionInfo(from: url)
       } catch {
-        logger.debug("Failed to load the previous session file: \(error).")
+        if Tracker.enabledLogCategories.contains(.session) {
+          logger.debug("❄️ Failed to load the previous session file: \(error).")
+        }
       }
     }
     
@@ -59,7 +62,9 @@ public class Session {
     NotificationCenter.default.addObserver(self, selector: #selector(saveSession), name: UIApplication.willTerminateNotification, object: nil)
 #endif
 
-    logger.info("Session created.")
+    if Tracker.isLoggerEnabled(for: .session) {
+      logger.info("❄️ Session created.")
+    }
 
     startTracking()
   }
@@ -76,14 +81,19 @@ public class Session {
                                  userInfo: nil,
                                  repeats: true)
 
-    logger.info("Session tracking started.")
+    if Tracker.isLoggerEnabled(for: .session) {
+      logger.info("❄️ Session tracking started.")
+    }
   }
   
   func stopTracking() {
     guard timer != nil else { return }
     timer?.invalidate()
     timer = nil
-    logger.info("Session tracking stopped.")
+
+    if Tracker.isLoggerEnabled(for: .session) {
+      logger.info("❄️ Session tracking stopped.")
+    }
   }
   
   // MARK: - Session
@@ -110,7 +120,10 @@ public class Session {
     sessionInfo.update()
     update()
     saveSession()
-    logger.info("Session reset.")
+
+    if Tracker.isLoggerEnabled(for: .session) {
+      logger.info("❄️ Session reset.")
+    }
   }
   
   // MARK: - Info
@@ -135,7 +148,9 @@ extension Session {
   
   @objc private func saveSession() {
     guard let sessionFileURL else {
-      logger.error("Cannot save sessions: no session file URL.")
+      if Tracker.isLoggerEnabled(for: .session) {
+        logger.error("❄️ Cannot save sessions: no session file URL.")
+      }
       return
     }
 
@@ -144,9 +159,13 @@ extension Session {
       savedSessionInfo.previousId = nil
       try savedSessionInfo.write(to: sessionFileURL)
 
-      logger.info("Session saved.")
+      if Tracker.isLoggerEnabled(for: .session) {
+        logger.info("❄️ Session saved.")
+      }
     } catch {
-      logger.error("Failed to save session: \(error)")
+      if Tracker.isLoggerEnabled(for: .session) {
+        logger.error("❄️ Failed to save session: \(error)")
+      }
     }
   }
 }

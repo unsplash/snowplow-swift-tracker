@@ -13,6 +13,13 @@ public class Tracker {
   private let session: Session
   private let trackerVersion = "2.0"
 
+  // Logging
+  public static var enabledLogCategories: [LogCategory] = LogCategory.allCases
+
+  static func isLoggerEnabled(for category: LogCategory) -> Bool {
+    Self.enabledLogCategories.contains(category)
+  }
+
   private var trackerPayload: Payload {
     var content = [PropertyKey: String]()
     content[.trackerVersion] = trackerVersion
@@ -36,7 +43,9 @@ public class Tracker {
     self.isBase64Encoded = true
     self.session = Session()
 
-    logger.info("Tracker initialized.")
+    if Tracker.isLoggerEnabled(for: .tracker) {
+      logger.info("❄️ Tracker initialized.")
+    }
   }
 }
 
@@ -78,23 +87,32 @@ extension Tracker {
                             referrer: String? = nil,
                             contexts: [SelfDescribingJSON]? = nil,
                             timestamp: TimeInterval? = nil) async {
-    logger.debug("Tracking page view: \(uri).")
+    if Tracker.isLoggerEnabled(for: .tracker) {
+      logger.debug("❄️ Tracking page view: \(uri).")
+    }
+
     var content: SnowplowDictionary = [:]
     content[.event] = EventType.pageView.rawValue
     content[.url] = uri
     content[.title] = title
     content[.referrer] = referrer
+
     let payload = Payload(content, base64Encoded: isBase64Encoded)
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
 
   public func trackScreenView(name: String,
                               identifier: String? = nil) async {
-    logger.debug("Tracking screen view: \(name).")
+    if Tracker.isLoggerEnabled(for: .tracker) {
+      logger.debug("❄️ Tracking screen view: \(name).")
+    }
+
     var data: SnowplowDictionary = [.name: name]
+
     if let identifier = identifier {
       data[.identifier] = identifier
     }
+
     let json = SelfDescribingJSON(schema: .screenView, dictionary: data)
     let payload = Payload(json, base64Encoded: isBase64Encoded)
     await trackUnstructEvent(event: payload)
@@ -107,16 +125,30 @@ extension Tracker {
                                value: Double? = nil,
                                contexts: [SelfDescribingJSON]? = nil,
                                timestamp: TimeInterval? = nil) async {
-    logger.debug("Tracking event: \(category) - \(action).")
+    if Tracker.isLoggerEnabled(for: .tracker) {
+      let values = [
+        category.isEmpty ? "<empty category>" : category,
+        action,
+        property,
+        label
+      ]
+        .compactMap({ $0 })
+        .joined(separator: " – ")
+
+      logger.debug("❄️ Tracking event: \(values).")
+    }
+
     var content: SnowplowDictionary = [:]
     content[.event] = EventType.structured.rawValue
     content[.category] = category
     content[.action] = action
     content[.label] = label
     content[.property] = property
+
     if let value {
       content[.value] = String(describing: value)
     }
+
     let payload = Payload(content, base64Encoded: isBase64Encoded)
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }
@@ -125,8 +157,12 @@ extension Tracker {
                           contexts: [SelfDescribingJSON]? = nil,
                           timestamp: TimeInterval? = nil) async {
     let json = SelfDescribingJSON(schema: .unstructEvent, payload: event)
+
     guard let eventValue = json.base64EncodedRepresentation else {
-      logger.error("Failed to encode the data.")
+      if Tracker.isLoggerEnabled(for: .tracker) {
+        logger.error("❄️ Failed to encode the data.")
+      }
+
       return
     }
 
@@ -135,6 +171,7 @@ extension Tracker {
     var content: SnowplowDictionary = [:]
     content[.event] = EventType.unstructured.rawValue
     content[eventKey] = eventValue
+
     let payload = Payload(content, base64Encoded: isBase64Encoded)
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
   }

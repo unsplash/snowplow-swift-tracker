@@ -9,11 +9,14 @@ actor PayloadStorage {
   private let isPersistenceEnabled: Bool
   private let logger: Logger = .init(subsystem: "SnowplowSwiftTracker", category: "PayloadStorage")
   private var persistenceFileURL: URL?
-  
-  init(persistenceEnabled: Bool = true) {
+
+  init(persistenceEnabled: Bool = true) async {
     isPersistenceEnabled = persistenceEnabled
+
     guard persistenceEnabled else {
-      logger.info("Persistent storage initialized with persistent disabled.")
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.info("❄️ Persistent storage initialized with persistent disabled.")
+      }
       return
     }
 
@@ -24,7 +27,9 @@ actor PayloadStorage {
       persistenceFileURL = url
       
       guard FileManager().fileExists(atPath: url.path) else {
-        logger.info("Persistent storage initialized without a file.")
+        if await Tracker.isLoggerEnabled(for: .storage) {
+          logger.info("❄️ Persistent storage initialized without a file.")
+        }
         return
       }
 
@@ -32,61 +37,98 @@ actor PayloadStorage {
       guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [[String: Sendable]] else {
         throw PayloadStorageError.cannotDecodeStoredData
       }
-      payloads = storedPayloads.compactMap { Payload(dictionary: $0) }
-      logger.debug("Persistent file loaded with \(storedPayloads.count) payloads.")
-      logger.info("Persistent storage initialized with a file.")
+
+      let payloads = storedPayloads.compactMap { Payload(dictionary: $0) }
+      self.payloads = payloads
+
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.debug("❄️ Persistent file loaded with \(payloads.count) payloads.")
+        logger.info("❄️ Persistent storage initialized with a file.")
+      }
     } catch {
-      logger.error("Failed to initialize the persistent file: \(error)")
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.error("❄️ Failed to initialize the persistent file: \(error)")
+      }
     }
   }
   
-  func save() {
+  func save() async {
     guard isPersistenceEnabled else {
-      logger.debug("Save canceled: persistence is disabled.")
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.debug("❄️ Save canceled: persistence is disabled.")
+      }
       return
     }
 
     guard let persistenceFileURL else {
-      logger.error("Failed to save payloads: no persistent file URL.")
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.error("❄️ Failed to save payloads: no persistent file URL.")
+      }
       return
     }
 
     do {
       let folderURL = persistenceFileURL.deletingLastPathComponent()
       if FileManager.default.fileExists(atPath: folderURL.path) == false {
-        logger.debug("Persistent file does not exist, creating it.")
+        if await Tracker.isLoggerEnabled(for: .storage) {
+          logger.debug("❄️ Persistent file does not exist, creating it.")
+        }
+
         try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
-        logger.debug("Persistent file created.")
+
+        if await Tracker.isLoggerEnabled(for: .storage) {
+          logger.debug("❄️ Persistent file created.")
+        }
       }
-      
-      let encodedPayloads = try JSONSerialization.data(withJSONObject: payloads.compactMap { $0.dictionaryRepresentation })
-      logger.debug("Saving \(encodedPayloads.count) payloads.")
+
+      let payloadsToEncode = payloads.compactMap { $0.dictionaryRepresentation }
+      let encodedPayloads = try JSONSerialization.data(withJSONObject: payloadsToEncode)
+
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.debug("❄️ Saving \(payloadsToEncode.count) payloads.")
+      }
+
       try encodedPayloads.write(to: persistenceFileURL, options: .atomic)
-      logger.info("Payloads saved.")
+
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.info("❄️ Payloads saved.")
+      }
     } catch {
-      logger.log(level: .error, "Failed to save to the persistent file: \(error)")
+      if await Tracker.isLoggerEnabled(for: .storage) {
+        logger.error("❄️ Failed to save to the persistent file: \(error)")
+      }
     }
   }
   
-  func append(_ payload: Payload) {
-    logger.debug("Adding a payload.")
+  func append(_ payload: Payload) async {
+    if await Tracker.isLoggerEnabled(for: .storage) {
+      logger.debug("❄️ Adding a payload.")
+    }
+
     payloads.append(payload)
-    save()
+    await save()
   }
   
-  func remove(_ payloadsToRemove: [Payload]) {
-    logger.debug("Removing \(payloadsToRemove.count) payloads.")
+  func remove(_ payloadsToRemove: [Payload]) async {
+    if await Tracker.isLoggerEnabled(for: .storage) {
+      logger.debug("❄️ Removing \(payloadsToRemove.count) payloads.")
+    }
+
     payloadsToRemove.forEach { payload in
       guard let index = payloads.firstIndex(of: payload) else { return }
       payloads.remove(at: index)
     }
-    save()
+
+    await save()
   }
 
-  func removeAll() {
-    logger.debug("Removing \(self.payloadCount) payloads.")
+  func removeAll() async {
+    if await Tracker.isLoggerEnabled(for: .storage) {
+      logger.debug("❄️ Removing \(self.payloadCount) payloads.")
+    }
+
     payloads.removeAll()
-    save()
+    await save()
   }
 }
 

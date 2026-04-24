@@ -13,13 +13,16 @@ public actor Emitter {
   public init(baseURL: String,
               requestMethod: RequestMethod = .post,
               payloadFlushFrequency: Int = 10,
-              payloadPersistenceEnabled: Bool = true) {
+              payloadPersistenceEnabled: Bool = true) async {
     self.baseURL = baseURL
     self.requestFactory = .init(baseURL: baseURL)
     self.requestMethod = requestMethod
     self.payloadFlushFrequency = payloadFlushFrequency
-    self.payloadStorage = PayloadStorage(persistenceEnabled: payloadPersistenceEnabled)
-    logger.info("Emitter initialized.")
+    self.payloadStorage = await PayloadStorage(persistenceEnabled: payloadPersistenceEnabled)
+
+    if await Tracker.isLoggerEnabled(for: .emitter) {
+      logger.info("❄️ Emitter initialized.")
+    }
   }
   
   func input(_ payload: Payload) async {
@@ -40,19 +43,31 @@ extension Emitter {
     guard await needsFlush() else { return }
     
     do {
-      logger.info("Flushing payloads.")
+      if await Tracker.isLoggerEnabled(for: .emitter) {
+        logger.info("❄️ Flushing payloads.")
+      }
+
       try await flush()
-      logger.info("Payloads flushed.")
+
+      if await Tracker.isLoggerEnabled(for: .emitter) {
+        logger.info("❄️ Payloads flushed.")
+      }
     } catch {
-      logger.error("Failed to flush payloads: \(error).")
+      if await Tracker.isLoggerEnabled(for: .emitter) {
+        logger.error("❄️ Failed to flush payloads: \(error).")
+      }
     }
   }
 
   private func flush() async throws {
     switch requestMethod {
     case .get:
-      logger.debug("Flushing payloads using the GET method.")
+      if await Tracker.isLoggerEnabled(for: .emitter) {
+        logger.debug("❄️ Flushing payloads using the GET method.")
+      }
+
       let payloads = await payloadStorage.payloads
+
       try await withThrowingTaskGroup(of: Void.self) { group in
         for payload in payloads {
           group.addTask { [self] in
@@ -65,9 +80,13 @@ extension Emitter {
       }
 
     case .post:
-      logger.debug("Flushing payloads using the POST method.")
+      if await Tracker.isLoggerEnabled(for: .emitter) {
+        logger.debug("❄️ Flushing payloads using the POST method.")
+      }
+
       let payloads = await payloadStorage.payloads
       let request = try requestFactory.postRequest(for: payloads)
+
       _ = try await URLSession.shared.data(for: request)
       await payloadStorage.remove(payloads)
     }

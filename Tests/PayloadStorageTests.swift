@@ -14,7 +14,7 @@ struct PayloadStorageTests {
     ]
     let payload = Payload(content, base64Encoded: false)
 
-    let storage = PayloadStorage(persistenceEnabled: false)
+    let storage = await PayloadStorage(persistenceEnabled: false)
     await storage.append(payload)
 
     await #expect(storage.payloadCount == 1)
@@ -34,10 +34,10 @@ struct PayloadStorageTests {
       .value: 8
     ]
     let payload = Payload(content, base64Encoded: false)
-    let storage = PayloadStorage(persistenceEnabled: true)
+    let storage = await PayloadStorage(persistenceEnabled: true)
     await storage.append(payload)
 
-    let newStorage = PayloadStorage(persistenceEnabled: true)
+    let newStorage = await PayloadStorage(persistenceEnabled: true)
     await #expect(newStorage.payloadCount == 1)
     await newStorage.removeAll()
   }
