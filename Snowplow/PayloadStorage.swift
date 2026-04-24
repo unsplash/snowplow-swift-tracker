@@ -14,7 +14,7 @@ actor PayloadStorage {
     isPersistenceEnabled = persistenceEnabled
 
     guard persistenceEnabled else {
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.info("❄️ Persistent storage initialized with persistent disabled.")
       }
       return
@@ -27,7 +27,7 @@ actor PayloadStorage {
       persistenceFileURL = url
       
       guard FileManager().fileExists(atPath: url.path) else {
-        if await Tracker.isLoggerEnabled(for: .storage) {
+        if Tracker.isLoggerEnabled(for: .storage) {
           logger.info("❄️ Persistent storage initialized without a file.")
         }
         return
@@ -41,12 +41,12 @@ actor PayloadStorage {
       let payloads = storedPayloads.compactMap { Payload(dictionary: $0) }
       self.payloads = payloads
 
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.debug("❄️ Persistent file loaded with \(payloads.count) payloads.")
         logger.info("❄️ Persistent storage initialized with a file.")
       }
     } catch {
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.error("❄️ Failed to initialize the persistent file: \(error)")
       }
     }
@@ -54,14 +54,14 @@ actor PayloadStorage {
   
   func save() async {
     guard isPersistenceEnabled else {
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.debug("❄️ Save canceled: persistence is disabled.")
       }
       return
     }
 
     guard let persistenceFileURL else {
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.error("❄️ Failed to save payloads: no persistent file URL.")
       }
       return
@@ -70,13 +70,13 @@ actor PayloadStorage {
     do {
       let folderURL = persistenceFileURL.deletingLastPathComponent()
       if FileManager.default.fileExists(atPath: folderURL.path) == false {
-        if await Tracker.isLoggerEnabled(for: .storage) {
+        if Tracker.isLoggerEnabled(for: .storage) {
           logger.debug("❄️ Persistent file does not exist, creating it.")
         }
 
         try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: true)
 
-        if await Tracker.isLoggerEnabled(for: .storage) {
+        if Tracker.isLoggerEnabled(for: .storage) {
           logger.debug("❄️ Persistent file created.")
         }
       }
@@ -84,24 +84,24 @@ actor PayloadStorage {
       let payloadsToEncode = payloads.compactMap { $0.dictionaryRepresentation }
       let encodedPayloads = try JSONSerialization.data(withJSONObject: payloadsToEncode)
 
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.debug("❄️ Saving \(payloadsToEncode.count) payloads.")
       }
 
       try encodedPayloads.write(to: persistenceFileURL, options: .atomic)
 
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.info("❄️ Payloads saved.")
       }
     } catch {
-      if await Tracker.isLoggerEnabled(for: .storage) {
+      if Tracker.isLoggerEnabled(for: .storage) {
         logger.error("❄️ Failed to save to the persistent file: \(error)")
       }
     }
   }
   
   func append(_ payload: Payload) async {
-    if await Tracker.isLoggerEnabled(for: .storage) {
+    if Tracker.isLoggerEnabled(for: .storage) {
       logger.debug("❄️ Adding a payload.")
     }
 
@@ -110,7 +110,7 @@ actor PayloadStorage {
   }
   
   func remove(_ payloadsToRemove: [Payload]) async {
-    if await Tracker.isLoggerEnabled(for: .storage) {
+    if Tracker.isLoggerEnabled(for: .storage) {
       logger.debug("❄️ Removing \(payloadsToRemove.count) payloads.")
     }
 
@@ -123,7 +123,7 @@ actor PayloadStorage {
   }
 
   func removeAll() async {
-    if await Tracker.isLoggerEnabled(for: .storage) {
+    if Tracker.isLoggerEnabled(for: .storage) {
       logger.debug("❄️ Removing \(self.payloadCount) payloads.")
     }
 

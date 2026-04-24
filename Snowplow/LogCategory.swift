@@ -6,3 +6,16 @@ public enum LogCategory: CaseIterable, Sendable {
   case storage
   case tracker
 }
+
+final class LogConfiguration: @unchecked Sendable {
+  @Locked private var categories: [LogCategory] = LogCategory.allCases
+  
+  var enabledCategories: [LogCategory] {
+    get { categories }
+    set { categories = newValue }
+  }
+  
+  func isEnabled(_ category: LogCategory) -> Bool {
+    categories.contains(category)
+  }
+}

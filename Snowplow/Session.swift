@@ -41,7 +41,7 @@ public class Session {
         
         initialSessionInfo = SessionInfo(from: url)
       } catch {
-        if Tracker.enabledLogCategories.contains(.session) {
+        if Tracker.isLoggerEnabled(for: .session) {
           logger.debug("❄️ Failed to load the previous session file: \(error).")
         }
       }

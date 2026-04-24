@@ -20,7 +20,7 @@ public actor Emitter {
     self.payloadFlushFrequency = payloadFlushFrequency
     self.payloadStorage = await PayloadStorage(persistenceEnabled: payloadPersistenceEnabled)
 
-    if await Tracker.isLoggerEnabled(for: .emitter) {
+    if Tracker.isLoggerEnabled(for: .emitter) {
       logger.info("❄️ Emitter initialized.")
     }
   }
@@ -43,17 +43,17 @@ extension Emitter {
     guard await needsFlush() else { return }
     
     do {
-      if await Tracker.isLoggerEnabled(for: .emitter) {
+      if Tracker.isLoggerEnabled(for: .emitter) {
         logger.info("❄️ Flushing payloads.")
       }
 
       try await flush()
 
-      if await Tracker.isLoggerEnabled(for: .emitter) {
+      if Tracker.isLoggerEnabled(for: .emitter) {
         logger.info("❄️ Payloads flushed.")
       }
     } catch {
-      if await Tracker.isLoggerEnabled(for: .emitter) {
+      if Tracker.isLoggerEnabled(for: .emitter) {
         logger.error("❄️ Failed to flush payloads: \(error).")
       }
     }
@@ -62,7 +62,7 @@ extension Emitter {
   private func flush() async throws {
     switch requestMethod {
     case .get:
-      if await Tracker.isLoggerEnabled(for: .emitter) {
+      if Tracker.isLoggerEnabled(for: .emitter) {
         logger.debug("❄️ Flushing payloads using the GET method.")
       }
 
@@ -80,7 +80,7 @@ extension Emitter {
       }
 
     case .post:
-      if await Tracker.isLoggerEnabled(for: .emitter) {
+      if Tracker.isLoggerEnabled(for: .emitter) {
         logger.debug("❄️ Flushing payloads using the POST method.")
       }
 

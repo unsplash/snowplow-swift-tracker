@@ -1,9 +1,11 @@
 import Foundation
 import OSLog
 
-@MainActor
 public class Tracker {
-  public var userId: String?
+  public var userId: String? {
+    get { userIdValue }
+    set { userIdValue = newValue }
+  }
 
   private let applicationId: String
   private let emitter: Emitter
@@ -13,27 +15,45 @@ public class Tracker {
   private let session: Session
   private let trackerVersion = "2.0"
 
-  // Logging
-  public static var enabledLogCategories: [LogCategory] = LogCategory.allCases
+  @Locked private var userIdValue: String?
 
-  static func isLoggerEnabled(for category: LogCategory) -> Bool {
-    Self.enabledLogCategories.contains(category)
+  // Logging
+  public static var enabledLogCategories: [LogCategory] {
+    get { logConfiguration.enabledCategories }
+    set { logConfiguration.enabledCategories = newValue }
   }
 
-  private var trackerPayload: Payload {
+  static func isLoggerEnabled(for category: LogCategory) -> Bool {
+    logConfiguration.isEnabled(category)
+  }
+
+  private static let logConfiguration = LogConfiguration()
+
+  private func trackerPayload() async -> Payload {
+    let userId = self.userId
+    let systemInfo = await MainActor.run {
+      (
+        platform: SystemInfo.platform,
+        language: SystemInfo.language,
+        resolution: SystemInfo.screenResolution,
+        timezone: SystemInfo.timezone
+      )
+    }
+
     var content = [PropertyKey: String]()
     content[.trackerVersion] = trackerVersion
     content[.appId] = applicationId
     content[.namespace] = name
-    content[.platform] = SystemInfo.platform
-    content[.language] = SystemInfo.language
-    content[.resolution] = SystemInfo.screenResolution
-    content[.viewPort] = SystemInfo.screenResolution
-    content[.timezone] = SystemInfo.timezone
+    content[.platform] = systemInfo.platform
+    content[.language] = systemInfo.language
+    content[.resolution] = systemInfo.resolution
+    content[.viewPort] = systemInfo.resolution
+    content[.timezone] = systemInfo.timezone
     content[.userId] = userId
     return Payload(content, base64Encoded: isBase64Encoded)
   }
 
+  @MainActor
   public init(applicationId: String,
               emitter: Emitter,
               name: String = "") {
@@ -57,7 +77,8 @@ extension Tracker {
              timestamp: TimeInterval? = nil) async {
     let eventId = UUID().uuidString.lowercased()
     let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
-    let sessionContext = session.sessionContext(with: eventId)
+    let sessionContext = await session.sessionContext(with: eventId)
+    let platformContext = await platformContext()
 
     let allContexts: [SelfDescribingJSON] = (contexts ?? .init()) + [
       sessionContext,
@@ -66,7 +87,7 @@ extension Tracker {
 
     let allContextsDictionary = SelfDescribingJSON.dictionaryRepresentation(schema: .contexts, data: allContexts.map { $0.dictionaryRepresentation })
 
-    let mergedPayloads = payload.merged(with: trackerPayload)
+    let mergedPayloads = payload.merged(with: await trackerPayload())
 
     var finalContent: SnowplowDictionary = mergedPayloads.content
     finalContent[.deviceTimestamp] = String(describing: timestamp)
@@ -180,12 +201,21 @@ extension Tracker {
 // MARK: - Context
 
 extension Tracker {
-  private var platformContext: SelfDescribingJSON {
+  private func platformContext() async -> SelfDescribingJSON {
+    let systemInfo = await MainActor.run {
+      (
+        osType: SystemInfo.osType,
+        osVersion: SystemInfo.osVersion,
+        deviceVendor: SystemInfo.deviceVendor,
+        deviceModel: SystemInfo.deviceModel
+      )
+    }
+
     let data: SnowplowDictionary = [
-      .platformOSType: SystemInfo.osType,
-      .platformOSVersion: SystemInfo.osVersion,
-      .platformDeviceManufacturer: SystemInfo.deviceVendor,
-      .platformDeviceModel: SystemInfo.deviceModel
+      .platformOSType: systemInfo.osType,
+      .platformOSVersion: systemInfo.osVersion,
+      .platformDeviceManufacturer: systemInfo.deviceVendor,
+      .platformDeviceModel: systemInfo.deviceModel
     ]
 #if os(macOS)
     return SelfDescribingJSON(schema: .platformDesktop, dictionary: data)
