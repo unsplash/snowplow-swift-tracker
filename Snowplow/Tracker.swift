@@ -57,26 +57,17 @@ public final class Tracker {
 
   private static let logConfiguration = LogConfiguration()
 
-  private func trackerPayload() async -> Payload {
-    let userId = self.userId
-    let systemInfo = await MainActor.run {
-      (
-        platform: SystemInfo.platform,
-        language: SystemInfo.language,
-        resolution: SystemInfo.screenResolution,
-        timezone: SystemInfo.timezone
-      )
-    }
-
+  @MainActor
+  private var trackerPayload: Payload {
     var content = [PropertyKey: String]()
     content[.trackerVersion] = trackerVersion
     content[.appId] = applicationId
     content[.namespace] = name
-    content[.platform] = systemInfo.platform
-    content[.language] = systemInfo.language
-    content[.resolution] = systemInfo.resolution
-    content[.viewPort] = systemInfo.resolution
-    content[.timezone] = systemInfo.timezone
+    content[.platform] = SystemInfo.platform
+    content[.language] = SystemInfo.language
+    content[.resolution] = SystemInfo.screenResolution
+    content[.viewPort] = SystemInfo.screenResolution
+    content[.timezone] = SystemInfo.timezone
     content[.userId] = userId
     return Payload(content, base64Encoded: isBase64Encoded)
   }
@@ -109,6 +100,7 @@ public final class Tracker {
 
 // MARK: - Tracking
 
+@MainActor
 extension Tracker {
   func track(payload: Payload,
              contexts: [SelfDescribingJSON]? = nil,
@@ -125,7 +117,7 @@ extension Tracker {
 
     let allContextsDictionary = SelfDescribingJSON.dictionaryRepresentation(schema: .contexts, data: allContexts.map { $0.dictionaryRepresentation })
 
-    let mergedPayloads = payload.merged(with: await trackerPayload())
+    let mergedPayloads = payload.merged(with: trackerPayload)
 
     var finalContent: SnowplowDictionary = mergedPayloads.content
     finalContent[.deviceTimestamp] = String(describing: timestamp)
@@ -238,22 +230,14 @@ extension Tracker {
 
 // MARK: - Context
 
+@MainActor
 extension Tracker {
   private func platformContext() async -> SelfDescribingJSON {
-    let systemInfo = await MainActor.run {
-      (
-        osType: SystemInfo.osType,
-        osVersion: SystemInfo.osVersion,
-        deviceVendor: SystemInfo.deviceVendor,
-        deviceModel: SystemInfo.deviceModel
-      )
-    }
-
     let data: SnowplowDictionary = [
-      .platformOSType: systemInfo.osType,
-      .platformOSVersion: systemInfo.osVersion,
-      .platformDeviceManufacturer: systemInfo.deviceVendor,
-      .platformDeviceModel: systemInfo.deviceModel
+      .platformOSType: SystemInfo.osType,
+      .platformOSVersion: SystemInfo.osVersion,
+      .platformDeviceManufacturer: SystemInfo.deviceVendor,
+      .platformDeviceModel: SystemInfo.deviceModel
     ]
 #if os(macOS)
     return SelfDescribingJSON(schema: .platformDesktop, dictionary: data)
