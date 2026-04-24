@@ -1,7 +1,7 @@
 import Foundation
 
 @propertyWrapper
-final class Locked<Value>: @unchecked Sendable {
+final class Locked<Value: Sendable>: @unchecked Sendable {
   private let lock = NSLock()
   private var value: Value
   
