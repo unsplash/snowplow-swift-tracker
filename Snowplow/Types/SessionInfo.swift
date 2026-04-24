@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SessionInfo: Codable {
+public struct SessionInfo: Codable, Sendable {
   var userId: String
   var currentId: String
   var previousId: String?
