@@ -1,6 +1,6 @@
 import Foundation
 
-public struct SelfDescribingJSON {
+public struct SelfDescribingJSON: Sendable {
   let schema: SchemaDefinition
   let data: [String: Sendable]
 

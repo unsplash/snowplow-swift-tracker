@@ -14,14 +14,16 @@ struct PayloadStorageTests {
     ]
     let payload = Payload(content, base64Encoded: false)
 
-    let storage = await PayloadStorage(persistenceEnabled: false)
-    await storage.append(payload)
+    let emitter = Emitter(baseURL: "http://localhost:9090",
+                                requestMethod: .post,
+                                payloadFlushFrequency: 100,
+                                payloadPersistenceEnabled: false)
 
-    await #expect(storage.payloadCount == 1)
+    await emitter.input(payload)
+    await #expect(emitter.storedPayloadCount == 1)
 
-    await storage.remove([payload])
-
-    await #expect(storage.payloadCount == 0)
+    await emitter.removeAllStoredPayloads()
+    await #expect(emitter.storedPayloadCount == 0)
   }
 
   @Test("Persistence")
@@ -34,11 +36,18 @@ struct PayloadStorageTests {
       .value: 8
     ]
     let payload = Payload(content, base64Encoded: false)
-    let storage = await PayloadStorage(persistenceEnabled: true)
-    await storage.append(payload)
 
-    let newStorage = await PayloadStorage(persistenceEnabled: true)
-    await #expect(newStorage.payloadCount == 1)
-    await newStorage.removeAll()
+    let emitter = Emitter(baseURL: "http://localhost:9090",
+                                requestMethod: .post,
+                                payloadFlushFrequency: 100,
+                                payloadPersistenceEnabled: true)
+    await emitter.input(payload)
+
+    let newEmitter = Emitter(baseURL: "http://localhost:9090",
+                                   requestMethod: .post,
+                                   payloadFlushFrequency: 100,
+                                   payloadPersistenceEnabled: true)
+    await #expect(newEmitter.storedPayloadCount == 1)
+    await newEmitter.removeAllStoredPayloads()
   }
 }

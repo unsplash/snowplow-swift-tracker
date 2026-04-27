@@ -8,11 +8,15 @@ The Snowplow Swift Tracker is available through [Swift Package Manager](https://
 
 ## Usage
 
-Events are sent through an instance of `Tracker`, which needs to be initialized with an `Emitter`.
+Events are sent through an instance of `Tracker`.
 
 ```
-let emitter = Emitter(baseURL: "SNOWPLOW_URL")
-let tracker = Tracker(applicationId: "APP_ID", emitter: emitter)
+let tracker = Tracker(
+  configuration: .init(
+    applicationId: "APP_ID",
+    baseURL: "SNOWPLOW_URL"
+  )
+)
 ```
 
 ## Testing

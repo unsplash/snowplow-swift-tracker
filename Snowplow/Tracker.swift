@@ -1,9 +1,39 @@
 import Foundation
 import OSLog
 
-@MainActor
-public class Tracker {
-  public var userId: String?
+public final class Tracker {
+  public struct Configuration: Sendable {
+    public enum RequestMethod: Sendable {
+      case get
+      case post
+    }
+
+    public let applicationId: String
+    public let name: String
+    public let baseURL: String
+    public let requestMethod: RequestMethod
+    public let payloadFlushFrequency: Int
+    public let payloadPersistenceEnabled: Bool
+
+    public init(applicationId: String,
+                name: String = "",
+                baseURL: String,
+                requestMethod: RequestMethod = .post,
+                payloadFlushFrequency: Int = 10,
+                payloadPersistenceEnabled: Bool = true) {
+      self.applicationId = applicationId
+      self.name = name
+      self.baseURL = baseURL
+      self.requestMethod = requestMethod
+      self.payloadFlushFrequency = payloadFlushFrequency
+      self.payloadPersistenceEnabled = payloadPersistenceEnabled
+    }
+  }
+
+  public var userId: String? {
+    get { userIdValue }
+    set { userIdValue = newValue }
+  }
 
   private let applicationId: String
   private let emitter: Emitter
@@ -13,13 +43,21 @@ public class Tracker {
   private let session: Session
   private let trackerVersion = "2.0"
 
-  // Logging
-  public static var enabledLogCategories: [LogCategory] = LogCategory.allCases
+  @Locked private var userIdValue: String?
 
-  static func isLoggerEnabled(for category: LogCategory) -> Bool {
-    Self.enabledLogCategories.contains(category)
+  // Logging
+  public static var enabledLogCategories: [LogCategory] {
+    get { logConfiguration.enabledCategories }
+    set { logConfiguration.enabledCategories = newValue }
   }
 
+  static func isLoggerEnabled(for category: LogCategory) -> Bool {
+    logConfiguration.isEnabled(category)
+  }
+
+  private static let logConfiguration = LogConfiguration()
+
+  @MainActor
   private var trackerPayload: Payload {
     var content = [PropertyKey: String]()
     content[.trackerVersion] = trackerVersion
@@ -34,12 +72,23 @@ public class Tracker {
     return Payload(content, base64Encoded: isBase64Encoded)
   }
 
-  public init(applicationId: String,
-              emitter: Emitter,
-              name: String = "") {
-    self.applicationId = applicationId
+  @MainActor
+  public init(configuration: Configuration) {
+    let requestMethod: Emitter.RequestMethod = switch configuration.requestMethod {
+    case .get: .get
+    case .post: .post
+    }
+
+    let emitter = Emitter(
+      baseURL: configuration.baseURL,
+      requestMethod: requestMethod,
+      payloadFlushFrequency: configuration.payloadFlushFrequency,
+      payloadPersistenceEnabled: configuration.payloadPersistenceEnabled
+    )
+
+    self.applicationId = configuration.applicationId
     self.emitter = emitter
-    self.name = name
+    self.name = configuration.name
     self.isBase64Encoded = true
     self.session = Session()
 
@@ -51,13 +100,15 @@ public class Tracker {
 
 // MARK: - Tracking
 
+@MainActor
 extension Tracker {
   func track(payload: Payload,
              contexts: [SelfDescribingJSON]? = nil,
              timestamp: TimeInterval? = nil) async {
     let eventId = UUID().uuidString.lowercased()
     let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
-    let sessionContext = session.sessionContext(with: eventId)
+    let sessionContext = await session.sessionContext(with: eventId)
+    let platformContext = await platformContext()
 
     let allContexts: [SelfDescribingJSON] = (contexts ?? .init()) + [
       sessionContext,
@@ -179,8 +230,9 @@ extension Tracker {
 
 // MARK: - Context
 
+@MainActor
 extension Tracker {
-  private var platformContext: SelfDescribingJSON {
+  private func platformContext() async -> SelfDescribingJSON {
     let data: SnowplowDictionary = [
       .platformOSType: SystemInfo.osType,
       .platformOSVersion: SystemInfo.osVersion,
