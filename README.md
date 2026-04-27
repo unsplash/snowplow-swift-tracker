@@ -48,4 +48,4 @@ colima stop
 ```
 
 Open Snowplow Micro in a web browser to validate the payloads sent from the tracker:
-`http://localhost:9090/micro/ui/`
+[`http://localhost:9090/micro/ui/`](http://localhost:9090/micro/ui/)
