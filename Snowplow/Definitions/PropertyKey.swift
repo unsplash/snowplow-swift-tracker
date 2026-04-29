@@ -69,4 +69,8 @@ public enum PropertyKey: String, Codable, Sendable {
   case platformOSVersion          = "osVersion"
   case platformDeviceManufacturer = "deviceManufacturer"
   case platformDeviceModel        = "deviceModel"
+
+  // Application context
+  case applicationBuild           = "build"
+  case applicationVersion         = "version"
 }

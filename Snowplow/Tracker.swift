@@ -109,11 +109,13 @@ extension Tracker {
     let timestamp = Int((timestamp ?? Date().timeIntervalSince1970) * 1000)
     let sessionContext = await session.sessionContext(with: eventId)
     let platformContext = await platformContext()
+    let applicationContext = applicationContext()
 
     let allContexts: [SelfDescribingJSON] = (contexts ?? .init()) + [
       sessionContext,
-      platformContext
-    ]
+      platformContext,
+      applicationContext
+    ].compactMap { $0 }
 
     let allContextsDictionary = SelfDescribingJSON.dictionaryRepresentation(schema: .contexts, data: allContexts.map { $0.dictionaryRepresentation })
 
@@ -232,6 +234,21 @@ extension Tracker {
 
 @MainActor
 extension Tracker {
+  private func applicationContext() -> SelfDescribingJSON? {
+    guard
+      let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String,
+      let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+    else {
+      return nil
+    }
+
+    let dictionary: SnowplowDictionary = [
+      .applicationBuild: build,
+      .applicationVersion: version
+    ]
+    return SelfDescribingJSON(schema: .application, dictionary: dictionary)
+  }
+
   private func platformContext() async -> SelfDescribingJSON {
     let data: SnowplowDictionary = [
       .platformOSType: SystemInfo.osType,
