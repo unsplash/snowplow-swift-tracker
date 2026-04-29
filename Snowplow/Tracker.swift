@@ -41,7 +41,7 @@ public final class Tracker {
   private let logger: Logger = .init(subsystem: "SnowplowSwiftTracker", category: "Tracker")
   private let name: String
   private let session: Session
-  private let trackerVersion = "2.1"
+  private let trackerVersion = "2.1.1"
 
   @Locked private var userIdValue: String?
 
