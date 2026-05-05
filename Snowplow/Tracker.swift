@@ -15,6 +15,9 @@ public final class Tracker {
     public let payloadFlushFrequency: Int
     public let payloadPersistenceEnabled: Bool
     public let encodeBase64: Bool
+    public let sessionForegroundTimeout: TimeInterval
+    public let sessionBackgroundTimeout: TimeInterval
+    public let sessionCheckInterval: TimeInterval
 
     public init(applicationId: String,
                 name: String = "",
@@ -22,7 +25,10 @@ public final class Tracker {
                 requestMethod: RequestMethod = .post,
                 payloadFlushFrequency: Int = 10,
                 payloadPersistenceEnabled: Bool = true,
-                encodeBase64: Bool = true) {
+                encodeBase64: Bool = true,
+                sessionForegroundTimeout: TimeInterval = 600,
+                sessionBackgroundTimeout: TimeInterval = 300,
+                sessionCheckInterval: TimeInterval = 15) {
       self.applicationId = applicationId
       self.name = name
       self.baseURL = baseURL
@@ -30,6 +36,9 @@ public final class Tracker {
       self.payloadFlushFrequency = payloadFlushFrequency
       self.payloadPersistenceEnabled = payloadPersistenceEnabled
       self.encodeBase64 = encodeBase64
+      self.sessionForegroundTimeout = sessionForegroundTimeout
+      self.sessionBackgroundTimeout = sessionBackgroundTimeout
+      self.sessionCheckInterval = sessionCheckInterval
     }
   }
 
@@ -94,6 +103,9 @@ public final class Tracker {
     self.name = configuration.name
     self.isBase64Encoded = configuration.encodeBase64
     self.session = Session()
+    self.session.foregroundTimeout = configuration.sessionForegroundTimeout
+    self.session.backgroundTimeout = configuration.sessionBackgroundTimeout
+    self.session.interval = configuration.sessionCheckInterval
 
     if Tracker.isLoggerEnabled(for: .tracker) {
       logger.info("❄️ Tracker initialized.")
