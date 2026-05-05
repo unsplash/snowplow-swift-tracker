@@ -5,13 +5,15 @@ struct EmitterRequestFactory: Sendable {
   var timeoutInterval = 30.0
   
   func getRequest(for payload: Payload) throws -> URLRequest {
-    guard let endpointURL = URL(string: "\(baseURL)/i") else {
+    guard let baseEndpointURL = URL(string: baseURL) else {
       throw URLError(.badURL)
     }
-    
+
+    let endpointURL = baseEndpointURL.appendingPathComponent("i")
     guard var components = URLComponents(url: endpointURL, resolvingAgainstBaseURL: true) else {
       throw URLError(.badURL)
     }
+
     components.queryItems = payload.content.queryItems
 
     guard let url = components.url else {
@@ -27,9 +29,12 @@ struct EmitterRequestFactory: Sendable {
   }
   
   func postRequest(for payloads: [Payload]) throws -> URLRequest {
-    guard let endpointURL = URL(string: "\(baseURL)/com.snowplowanalytics.snowplow/tp2") else {
+    guard let baseEndpointURL = URL(string: baseURL) else {
       throw URLError(.badURL)
     }
+    let endpointURL = baseEndpointURL
+      .appendingPathComponent("com.snowplowanalytics.snowplow")
+      .appendingPathComponent("tp2")
 
     let finalJSONPayload = SelfDescribingJSON.dictionaryRepresentation(schema: .payloadData, data: payloads.map { $0.content.dictionaryRepresentation })
 
