@@ -25,10 +25,10 @@ public struct Payload: Identifiable, Sendable {
       return nil
     }
 
-    guard let contentDictionary = dictionary["content"] as? [String: Sendable],
-          let content = SnowplowDictionary(dictionary: contentDictionary) else {
+    guard let contentDictionary = dictionary["content"] as? [String: Sendable] else {
       return nil
     }
+    let content = SnowplowDictionary(dictionary: contentDictionary)
 
     guard let isBase64Encoded = dictionary["isBase64Encoded"] as? Bool else {
       return nil
@@ -107,9 +107,7 @@ private extension Payload {
 
   init?(wrapper: PayloadCodableWrapper) {
     let contentDictionary = wrapper.content.mapValues { $0.sendableValue }
-    guard let content = SnowplowDictionary(dictionary: contentDictionary) else {
-      return nil
-    }
+    let content = SnowplowDictionary(dictionary: contentDictionary)
 
     self.id = wrapper.id
     self.content = content

@@ -3,7 +3,7 @@ import Foundation
 public typealias SnowplowDictionary = [PropertyKey: Sendable]
 
 public extension SnowplowDictionary {
-  init?(dictionary: [String: Sendable]) {
+  init(dictionary: [String: Sendable]) {
     self.init()
     dictionary.forEach { (key, value) in
       guard let propertyKey = PropertyKey(rawValue: key) else {
