@@ -28,12 +28,30 @@ struct PayloadStorageTests {
 
   @Test("Persistence")
   func testPersistence() async {
+    let contextJSON = SelfDescribingJSON(schema: .contexts, data: [
+      "nested": [
+        "flag": true,
+        "count": 2
+      ] as [String: Sendable],
+      "list": [
+        "first",
+        1,
+        false
+      ] as [Sendable]
+    ])
+
+    guard let encodedContext = contextJSON.base64EncodedRepresentation else {
+      Issue.record("Unable to build context test payload.")
+      return
+    }
+
     let content: SnowplowDictionary = [
       .action: "testAction",
       .event: "testEvent",
       .category: "testCategory",
       .property: "testProperty",
-      .value: 8
+      .value: 8,
+      .contextEncoded: encodedContext
     ]
     let payload = Payload(content, base64Encoded: false)
 
