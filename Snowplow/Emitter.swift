@@ -165,6 +165,21 @@ extension Emitter {
 // MARK: - Flush
 
 extension Emitter {
+  private enum FlushError: Error {
+    case invalidResponse
+    case unsuccessfulStatusCode(Int)
+  }
+
+  private func validateResponse(_ response: URLResponse) throws {
+    guard let httpResponse = response as? HTTPURLResponse else {
+      throw FlushError.invalidResponse
+    }
+
+    guard (200...299).contains(httpResponse.statusCode) else {
+      throw FlushError.unsuccessfulStatusCode(httpResponse.statusCode)
+    }
+  }
+
   private func needsFlush() -> Bool {
     switch requestMethod {
     case .get:
@@ -211,7 +226,8 @@ extension Emitter {
       let payloadsToSend = payloads
       for payload in payloadsToSend {
         let request = try requestFactory.getRequest(for: payload)
-        _ = try await URLSession.shared.data(for: request)
+        let (_, response) = try await URLSession.shared.data(for: request)
+        try validateResponse(response)
         removePayloads([payload])
       }
 
@@ -225,7 +241,8 @@ extension Emitter {
 
       let request = try requestFactory.postRequest(for: payloadsToSend)
 
-      _ = try await URLSession.shared.data(for: request)
+      let (_, response) = try await URLSession.shared.data(for: request)
+      try validateResponse(response)
       removePayloads(payloadsToSend)
     }
   }
