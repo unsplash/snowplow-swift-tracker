@@ -55,15 +55,11 @@ actor Emitter {
       }
 
       let encodedPayloads = try Data(contentsOf: url)
-      guard let storedPayloads = try JSONSerialization.jsonObject(with: encodedPayloads) as? [[String: Sendable]] else {
-        throw PayloadStorageError.cannotDecodeStoredData
-      }
-
-      let decodedPayloads = storedPayloads.compactMap { Payload(dictionary: $0) }
-      payloads = decodedPayloads
+      payloads = try JSONDecoder().decode([Payload].self, from: encodedPayloads)
 
       if isEmitterLoggerEnabled {
-        logger.debug("❄️ Persistent file loaded with \(decodedPayloads.count) payloads.")
+        let restoredPayloadCount = payloads.count
+        logger.debug("❄️ Persistent file loaded with \(restoredPayloadCount) payloads.")
         logger.info("❄️ Persistent storage initialized with a file.")
       }
     } catch {
@@ -120,11 +116,11 @@ extension Emitter {
         }
       }
 
-      let payloadsToEncode = payloads.compactMap { $0.dictionaryRepresentation }
-      let encodedPayloads = try JSONSerialization.data(withJSONObject: payloadsToEncode)
+      let encodedPayloads = try JSONEncoder().encode(payloads)
 
       if Tracker.isLoggerEnabled(for: .emitter) {
-        logger.debug("❄️ Saving \(payloadsToEncode.count) payloads.")
+        let payloadCount = payloads.count
+        logger.debug("❄️ Saving \(payloadCount) payloads.")
       }
 
       try encodedPayloads.write(to: persistenceFileURL, options: .atomic)
@@ -253,8 +249,4 @@ extension Emitter {
     case get
     case post
   }
-}
-
-enum PayloadStorageError: Error {
-  case cannotDecodeStoredData
 }

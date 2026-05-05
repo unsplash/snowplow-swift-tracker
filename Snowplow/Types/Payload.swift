@@ -40,11 +40,11 @@ public struct Payload: Identifiable, Sendable {
   }
 
   public init?(data: Data) {
-    guard let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: Sendable] else {
+    guard let wrapper = try? JSONDecoder().decode(PayloadCodableWrapper.self, from: data) else {
       return nil
     }
 
-    self.init(dictionary: dictionary)
+    self.init(wrapper: wrapper)
   }
 
   public func merged(with payload: Payload) -> Payload {
@@ -60,6 +60,34 @@ extension Payload: Equatable {
   }
 }
 
+extension Payload: Codable {
+  public init(from decoder: Decoder) throws {
+    let wrapper = try PayloadCodableWrapper(from: decoder)
+    guard let payload = Payload(wrapper: wrapper) else {
+      throw DecodingError.dataCorrupted(.init(codingPath: decoder.codingPath,
+                                              debugDescription: "Cannot decode payload content."))
+    }
+    self = payload
+  }
+
+  public func encode(to encoder: Encoder) throws {
+    let contentDictionary = content.dictionaryRepresentation
+    let encodedContent = try contentDictionary.reduce(into: [String: JSONValue]()) { result, item in
+      guard let jsonValue = JSONValue(sendable: item.value) else {
+        throw EncodingError.invalidValue(item.value,
+                                         .init(codingPath: encoder.codingPath,
+                                               debugDescription: "Unsupported payload content value."))
+      }
+      result[item.key] = jsonValue
+    }
+
+    let wrapper = PayloadCodableWrapper(id: id,
+                                        content: encodedContent,
+                                        isBase64Encoded: isBase64Encoded)
+    try wrapper.encode(to: encoder)
+  }
+}
+
 extension Payload {
   var dictionaryRepresentation: [String: Any] {
     [
@@ -67,5 +95,24 @@ extension Payload {
       "content": content.dictionaryRepresentation,
       "isBase64Encoded": isBase64Encoded
     ]
+  }
+}
+
+private extension Payload {
+  struct PayloadCodableWrapper: Codable {
+    let id: String
+    let content: [String: JSONValue]
+    let isBase64Encoded: Bool
+  }
+
+  init?(wrapper: PayloadCodableWrapper) {
+    let contentDictionary = wrapper.content.mapValues { $0.sendableValue }
+    guard let content = SnowplowDictionary(dictionary: contentDictionary) else {
+      return nil
+    }
+
+    self.id = wrapper.id
+    self.content = content
+    self.isBase64Encoded = wrapper.isBase64Encoded
   }
 }
