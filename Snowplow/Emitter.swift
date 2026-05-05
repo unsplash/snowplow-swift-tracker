@@ -55,7 +55,10 @@ actor Emitter {
       }
 
       let encodedPayloads = try Data(contentsOf: url)
-      payloads = try JSONCoding.decoder.decode([Payload].self, from: encodedPayloads)
+      guard let decodedPayloads = Payload.decodePersistedPayloads(from: encodedPayloads) else {
+        throw CocoaError(.coderReadCorrupt)
+      }
+      payloads = decodedPayloads
 
       if isEmitterLoggerEnabled {
         let restoredPayloadCount = payloads.count

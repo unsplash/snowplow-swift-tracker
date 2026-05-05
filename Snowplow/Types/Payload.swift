@@ -114,3 +114,22 @@ private extension Payload {
     self.isBase64Encoded = wrapper.isBase64Encoded
   }
 }
+
+extension Payload {
+  static func decodePersistedPayloads(from data: Data) -> [Payload]? {
+    if let payloads = try? JSONCoding.decoder.decode([Payload].self, from: data) {
+      return payloads
+    }
+
+    guard let legacyPayloadDictionaries = try? JSONSerialization.jsonObject(with: data) as? [[String: Sendable]] else {
+      return nil
+    }
+
+    let decodedPayloads = legacyPayloadDictionaries.compactMap { Payload(dictionary: $0) }
+    guard decodedPayloads.count == legacyPayloadDictionaries.count else {
+      return nil
+    }
+
+    return decodedPayloads
+  }
+}
