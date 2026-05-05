@@ -57,6 +57,11 @@ class Session {
     startTracking()
   }
 
+  @MainActor deinit {
+    NotificationCenter.default.removeObserver(self)
+    stopTracking()
+  }
+
   // MARK: - Tracking
 
   func startTracking() {
