@@ -43,7 +43,7 @@ internal struct EmitterRequestFactory: Sendable {
                                     timeoutInterval: timeoutInterval)
     request.httpMethod = "POST"
     request.allHTTPHeaderFields = ["content-type": "application/json; charset=utf-8"]
-    request.httpBody = try JSONSerialization.data(withJSONObject: finalJSONPayload)
+    request.httpBody = try JSONCoding.data(fromJSONObject: finalJSONPayload)
 
     return request
   }

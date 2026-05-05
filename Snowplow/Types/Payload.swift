@@ -40,7 +40,7 @@ public struct Payload: Identifiable, Sendable {
   }
 
   public init?(data: Data) {
-    guard let wrapper = try? JSONDecoder().decode(PayloadCodableWrapper.self, from: data) else {
+    guard let wrapper = try? JSONCoding.decoder.decode(PayloadCodableWrapper.self, from: data) else {
       return nil
     }
 

@@ -20,7 +20,7 @@ public struct SelfDescribingJSON: Sendable {
   }
 
   public init?(data: Data) {
-    guard let wrapper = try? JSONDecoder().decode(SelfDescribingJSONCodableWrapper.self, from: data),
+    guard let wrapper = try? JSONCoding.decoder.decode(SelfDescribingJSONCodableWrapper.self, from: data),
           let decodedSchema = SchemaDefinition(rawValue: wrapper.schema) else {
       return nil
     }
@@ -32,10 +32,7 @@ public struct SelfDescribingJSON: Sendable {
 
 extension SelfDescribingJSON {
   var base64EncodedRepresentation: String? {
-    guard let data = try? JSONSerialization.data(withJSONObject: self.dictionaryRepresentation) else {
-      return nil
-    }
-    return data.base64EncodedString()
+    try? JSONCoding.base64EncodedString(fromJSONObject: self.dictionaryRepresentation)
   }
 
   var dictionaryRepresentation: [String: Sendable] {

@@ -55,7 +55,7 @@ actor Emitter {
       }
 
       let encodedPayloads = try Data(contentsOf: url)
-      payloads = try JSONDecoder().decode([Payload].self, from: encodedPayloads)
+      payloads = try JSONCoding.decoder.decode([Payload].self, from: encodedPayloads)
 
       if isEmitterLoggerEnabled {
         let restoredPayloadCount = payloads.count
@@ -116,7 +116,7 @@ extension Emitter {
         }
       }
 
-      let encodedPayloads = try JSONEncoder().encode(payloads)
+      let encodedPayloads = try JSONCoding.encoder.encode(payloads)
 
       if Tracker.isLoggerEnabled(for: .emitter) {
         let payloadCount = payloads.count
