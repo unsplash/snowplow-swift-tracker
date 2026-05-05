@@ -19,6 +19,16 @@ let tracker = Tracker(
 )
 ```
 
+### Configuration notes
+
+- `encodeBase64` controls how event payload contexts and unstructured events are encoded:
+  - `true` (default): sends encoded fields such as `cx` and `ue_px`.
+  - `false`: sends plain JSON fields such as `co` and `ue_pr`.
+- Session timing behavior is configurable:
+  - `sessionForegroundTimeout` (default: `600` seconds)
+  - `sessionBackgroundTimeout` (default: `300` seconds)
+  - `sessionCheckInterval` (default: `15` seconds)
+
 ## Testing
 
 The tracker tests need to be validated using an instance of [Snowplow Micro](https://docs.snowplow.io/docs/data-product-studio/data-quality/snowplow-micro/) running locally.
