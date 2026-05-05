@@ -14,19 +14,22 @@ public final class Tracker {
     public let requestMethod: RequestMethod
     public let payloadFlushFrequency: Int
     public let payloadPersistenceEnabled: Bool
+    public let encodeBase64: Bool
 
     public init(applicationId: String,
                 name: String = "",
                 baseURL: String,
                 requestMethod: RequestMethod = .post,
                 payloadFlushFrequency: Int = 10,
-                payloadPersistenceEnabled: Bool = true) {
+                payloadPersistenceEnabled: Bool = true,
+                encodeBase64: Bool = true) {
       self.applicationId = applicationId
       self.name = name
       self.baseURL = baseURL
       self.requestMethod = requestMethod
       self.payloadFlushFrequency = payloadFlushFrequency
       self.payloadPersistenceEnabled = payloadPersistenceEnabled
+      self.encodeBase64 = encodeBase64
     }
   }
 
@@ -89,7 +92,7 @@ public final class Tracker {
     self.applicationId = configuration.applicationId
     self.emitter = emitter
     self.name = configuration.name
-    self.isBase64Encoded = true
+    self.isBase64Encoded = configuration.encodeBase64
     self.session = Session()
 
     if Tracker.isLoggerEnabled(for: .tracker) {
@@ -211,19 +214,20 @@ extension Tracker {
                           timestamp: TimeInterval? = nil) async {
     let json = SelfDescribingJSON(schema: .unstructEvent, payload: event)
 
-    guard let eventValue = json.base64EncodedRepresentation else {
-      if Tracker.isLoggerEnabled(for: .tracker) {
-        logger.error("❄️ Failed to encode the data.")
-      }
-
-      return
-    }
-
-    let eventKey: PropertyKey = isBase64Encoded ? .unstructuredEncoded : .unstructured
-
     var content: SnowplowDictionary = [:]
     content[.event] = EventType.unstructured.rawValue
-    content[eventKey] = eventValue
+    if isBase64Encoded {
+      guard let eventValue = json.base64EncodedRepresentation else {
+        if Tracker.isLoggerEnabled(for: .tracker) {
+          logger.error("❄️ Failed to encode the data.")
+        }
+
+        return
+      }
+      content[.unstructuredEncoded] = eventValue
+    } else {
+      content[.unstructured] = json.dictionaryRepresentation
+    }
 
     let payload = Payload(content, base64Encoded: isBase64Encoded)
     await track(payload: payload, contexts: contexts, timestamp: timestamp)
