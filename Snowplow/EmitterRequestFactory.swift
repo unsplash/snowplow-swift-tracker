@@ -1,10 +1,10 @@
 import Foundation
 
-struct EmitterRequestFactory: Sendable {
-  let baseURL: String
-  var timeoutInterval = 30.0
+internal struct EmitterRequestFactory: Sendable {
+  internal let baseURL: String
+  internal var timeoutInterval = 30.0
   
-  func getRequest(for payload: Payload) throws -> URLRequest {
+  internal func getRequest(for payload: Payload) throws -> URLRequest {
     guard let baseEndpointURL = URL(string: baseURL) else {
       throw URLError(.badURL)
     }
@@ -28,7 +28,7 @@ struct EmitterRequestFactory: Sendable {
     return request
   }
   
-  func postRequest(for payloads: [Payload]) throws -> URLRequest {
+  internal func postRequest(for payloads: [Payload]) throws -> URLRequest {
     guard let baseEndpointURL = URL(string: baseURL) else {
       throw URLError(.badURL)
     }

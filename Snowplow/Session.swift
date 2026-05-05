@@ -8,10 +8,10 @@ import UIKit
 #endif
 
 @MainActor
-class Session {
-  var foregroundTimeout: TimeInterval = 600
-  var backgroundTimeout: TimeInterval = 300
-  var interval: TimeInterval = 15 {
+internal final class Session {
+  internal var foregroundTimeout: TimeInterval = 600
+  internal var backgroundTimeout: TimeInterval = 300
+  internal var interval: TimeInterval = 15 {
     didSet {
       stopTracking()
       startTracking()
@@ -25,7 +25,7 @@ class Session {
 
   // MARK: - Initialization
 
-  init(info: SessionInfo? = nil) {
+  internal init(info: SessionInfo? = nil) {
     let sessionFileURL: URL?
 
     do {
@@ -64,7 +64,7 @@ class Session {
 
   // MARK: - Tracking
 
-  func startTracking() {
+  internal func startTracking() {
     if timer != nil {
       stopTracking()
     }
@@ -79,7 +79,7 @@ class Session {
     }
   }
 
-  func stopTracking() {
+  internal func stopTracking() {
     guard timer != nil else { return }
     timer?.invalidate()
     timer = nil
@@ -120,7 +120,7 @@ class Session {
 
   // MARK: - Info
 
-  func sessionContext(with eventId: String) async -> SelfDescribingJSON {
+  internal func sessionContext(with eventId: String) async -> SelfDescribingJSON {
     await state.sessionContext(with: eventId)
   }
 }
