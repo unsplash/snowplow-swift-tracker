@@ -196,6 +196,8 @@ private actor SessionState {
   }
 
   func sessionContext(with eventId: String) -> SelfDescribingJSON {
+    touch()
+
     let data: SnowplowDictionary = [
       .sessionContextUserId: sessionInfo.userId,
       .sessionContextSessionId: sessionInfo.currentId,
@@ -205,6 +207,10 @@ private actor SessionState {
       .sessionContextStorageMechanism: sessionInfo.storage
     ]
     return SelfDescribingJSON(schema: .session, dictionary: data)
+  }
+
+  private func touch(now: TimeInterval = Date().timeIntervalSince1970) {
+    lastAccessTime = now
   }
 
   func save() throws {

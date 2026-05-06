@@ -103,9 +103,9 @@ public final class Tracker {
     self.name = configuration.name
     self.isBase64Encoded = configuration.encodeBase64
     self.session = Session()
-    self.session.foregroundTimeout = configuration.sessionForegroundTimeout
-    self.session.backgroundTimeout = configuration.sessionBackgroundTimeout
-    self.session.interval = configuration.sessionCheckInterval
+    self.session.foregroundTimeout = max(configuration.sessionForegroundTimeout, 1)
+    self.session.backgroundTimeout = max(configuration.sessionBackgroundTimeout, 1)
+    self.session.interval = max(configuration.sessionCheckInterval, 1)
 
     if Tracker.isLoggerEnabled(for: .tracker) {
       logger.info("❄️ Tracker initialized.")
