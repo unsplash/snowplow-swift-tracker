@@ -5,7 +5,7 @@ enum JSONCoding {
   static let decoder = JSONDecoder()
 
   static func data(fromJSONObject object: Any) throws -> Data {
-    try JSONSerialization.data(withJSONObject: object)
+    try JSONSerialization.data(withJSONObject: object, options: .withoutEscapingSlashes)
   }
 
   static func base64EncodedString(fromJSONObject object: Any) throws -> String {
