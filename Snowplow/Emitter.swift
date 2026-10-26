@@ -36,7 +36,7 @@ actor Emitter {
 
     guard isPersistenceEnabled else {
       if isEmitterLoggerEnabled {
-        logger.info("❄️ Persistent storage initialized with persistent disabled.")
+        logger.info("❄️ Persistent storage initialized with persistence disabled.")
       }
       return
     }
